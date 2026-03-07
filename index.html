@@ -1,0 +1,673 @@
+import { useState, useRef, useEffect, useCallback } from "react";
+
+// ─── CONSTANTS ───────────────────────────────────────────────────────────────
+const LINKEDIN_BLUE = "#0077B5";
+const GOLD = "#C9A84C";
+
+const SYSTEM_PROMPT = `You are an elite LinkedIn growth coach. You have analyzed 987+ posts and 23.6M impressions.
+Always respond in English. Be concise, direct, and actionable.
+When writing posts:
+- Start with a scroll-stopping hook (never start with "I")
+- Use short paragraphs (1-3 lines max)
+- Add white space between paragraphs  
+- End with a clear CTA
+- Use → for bullets
+- Include a story or data point
+Provide the complete post ready to copy-paste, plus 2-3 improvement tips.`;
+
+const HASHTAG_SYSTEM = `You are a LinkedIn hashtag expert. Given a post, return ONLY a JSON array of 5-7 relevant hashtags (with # symbol, no spaces). No explanation. Example: ["#LinkedIn","#PersonalBranding"]`;
+
+const SCORE_SYSTEM = `You are a LinkedIn content analyst. Analyze the post and return ONLY a JSON object with these exact keys:
+{
+  "score": <number 1-100>,
+  "hook": <number 1-10>,
+  "readability": <number 1-10>,
+  "engagement": <number 1-10>,
+  "cta": <number 1-10>,
+  "tip": "<one actionable improvement tip in under 15 words>"
+}
+No explanation, just the JSON.`;
+
+const TEMPLATES = [
+  { id:1, name:"Anti-Guru Confession", emoji:"🎭", desc:"Admit what others won't say", color:"#e74c3c" },
+  { id:2, name:"Transformation Story", emoji:"🚀", desc:"Before → After narrative", color:"#2ecc71" },
+  { id:3, name:"Contrarian Take", emoji:"⚡", desc:"Challenge the common advice", color:"#f39c12" },
+  { id:4, name:"Behind The Scenes", emoji:"🎬", desc:"Show your real process", color:"#9b59b6" },
+  { id:5, name:"Lessons Learned", emoji:"💡", desc:"Number-based insight post", color:"#3498db" },
+  { id:6, name:"Client Win Story", emoji:"🏆", desc:"Social proof + lesson", color:GOLD },
+];
+
+const IMAGE_STYLES = [
+  { id:"professional", label:"💼 Professional", extra:"clean corporate office minimal white background" },
+  { id:"tech",         label:"🤖 Tech / AI",    extra:"futuristic technology AI neural network glowing blue" },
+  { id:"nature",       label:"🌿 Calm Nature",  extra:"serene nature zen peaceful minimal soft light" },
+  { id:"bold",         label:"🔥 Bold Dark",    extra:"dramatic dark cinematic studio moody lighting" },
+  { id:"gradient",     label:"🌈 Gradient",     extra:"beautiful colorful gradient abstract modern" },
+  { id:"workspace",    label:"🖥️ Workspace",   extra:"modern desk laptop coffee workspace top view" },
+];
+
+const TABS = [
+  { id:"coach",    icon:"🤖", label:"AI Coach"     },
+  { id:"studio",   icon:"✍️",  label:"Post Studio"  },
+  { id:"image",    icon:"🎨", label:"Image Gen"    },
+  { id:"templates",icon:"📋", label:"Templates"    },
+];
+
+// ─── API HELPER ───────────────────────────────────────────────────────────────
+async function callClaude(system, messages, maxTokens=1000) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:maxTokens, system, messages }),
+  });
+  const data = await res.json();
+  return data.content?.map(b=>b.text).join("") || "";
+}
+
+// ─── SCORE RING ───────────────────────────────────────────────────────────────
+function ScoreRing({ score, size=80, stroke=7 }) {
+  const r = (size-stroke*2)/2;
+  const circ = 2*Math.PI*r;
+  const dash = (score/100)*circ;
+  const color = score>=75?"#2ecc71":score>=50?GOLD:"#e74c3c";
+  return (
+    <svg width={size} height={size} style={{transform:"rotate(-90deg)"}}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={stroke}/>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+        strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
+        style={{transition:"stroke-dasharray 0.8s ease"}}/>
+      <text x={size/2} y={size/2+1} textAnchor="middle" dominantBaseline="middle"
+        fill={color} fontSize={size*0.22} fontWeight="700" fontFamily="Georgia,serif"
+        style={{transform:`rotate(90deg)`,transformOrigin:`${size/2}px ${size/2}px`}}>
+        {score}
+      </text>
+    </svg>
+  );
+}
+
+// ─── LINKEDIN PREVIEW ─────────────────────────────────────────────────────────
+function LinkedInPreview({ text, hashtags }) {
+  const [expanded, setExpanded] = useState(false);
+  const preview = text || "Your post will appear here as you type...";
+  const lines = preview.split("\n");
+  const isLong = lines.length > 5 || preview.length > 300;
+  const shown = expanded ? preview : lines.slice(0,5).join("\n").slice(0,300);
+  const fmt = t => t
+    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+    .replace(/→/g,'<span style="color:'+LINKEDIN_BLUE+'">→</span>')
+    .replace(/\n/g,"<br/>");
+
+  return (
+    <div style={{background:"#fff",borderRadius:"10px",overflow:"hidden",boxShadow:"0 2px 16px rgba(0,0,0,0.18)",fontFamily:"'-apple-system',BlinkMacSystemFont,'Segoe UI',sans-serif"}}>
+      {/* Post Header */}
+      <div style={{padding:"14px 16px 0",display:"flex",alignItems:"center",gap:"10px"}}>
+        <div style={{width:44,height:44,borderRadius:"50%",background:`linear-gradient(135deg,${LINKEDIN_BLUE},#004182)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",fontWeight:"700",color:"#fff",flexShrink:0}}>
+          MG
+        </div>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:"700",fontSize:"14px",color:"#000",lineHeight:1.2}}>Manu Gupta</div>
+          <div style={{fontSize:"11px",color:"#666",lineHeight:1.3}}>LinkedIn Growth Coach • 2nd</div>
+          <div style={{fontSize:"11px",color:"#888",display:"flex",alignItems:"center",gap:"4px",marginTop:"1px"}}>
+            Just now · <span style={{fontSize:"12px"}}>🌐</span>
+          </div>
+        </div>
+        <div style={{width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",color:"#666",fontSize:"18px",cursor:"pointer"}}>•••</div>
+      </div>
+
+      {/* Post Body */}
+      <div style={{padding:"10px 16px",fontSize:"14px",color:"#000",lineHeight:"1.6"}}>
+        <div dangerouslySetInnerHTML={{__html: fmt(shown)}} />
+        {isLong && !expanded && <span>...</span>}
+        {isLong && (
+          <span onClick={()=>setExpanded(!expanded)}
+            style={{color:LINKEDIN_BLUE,cursor:"pointer",fontWeight:"600",marginLeft:"4px",fontSize:"13px"}}>
+            {expanded?"  show less":"  ...more"}
+          </span>
+        )}
+        {hashtags?.length>0 && (
+          <div style={{marginTop:"8px",display:"flex",flexWrap:"wrap",gap:"4px"}}>
+            {hashtags.map((h,i)=>(
+              <span key={i} style={{color:LINKEDIN_BLUE,fontSize:"13px",fontWeight:"500"}}>{h} </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Reactions Row */}
+      <div style={{padding:"4px 16px",borderBottom:"1px solid #e8e8e8",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"4px"}}>
+          <span style={{fontSize:"14px"}}>👍❤️💡</span>
+          <span style={{fontSize:"12px",color:"#666"}}>247 reactions</span>
+        </div>
+        <span style={{fontSize:"12px",color:"#666"}}>38 comments</span>
+      </div>
+
+      {/* Action Bar */}
+      <div style={{padding:"2px 8px",display:"flex",justifyContent:"space-around"}}>
+        {[["👍","Like"],["💬","Comment"],["🔄","Repost"],["📤","Send"]].map(([ic,lb])=>(
+          <div key={lb} style={{display:"flex",alignItems:"center",gap:"5px",padding:"10px 12px",borderRadius:"6px",cursor:"pointer",color:"#666",fontSize:"13px",fontWeight:"600"}}>
+            <span style={{fontSize:"16px"}}>{ic}</span>{lb}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+export default function ManuLinkedInApp() {
+  const [tab, setTab]           = useState("coach");
+  const [messages, setMessages] = useState([{
+    role:"assistant",
+    content:`**Welcome to Manu's LinkedIn App!** 🚀\n\nI'm your AI-powered LinkedIn Growth Coach.\n\nI can help you:\n→ Write viral, scroll-stopping posts\n→ Choose the right content template\n→ Craft hooks that get engagement\n→ Build your personal brand\n\nWhat's your topic or niche? Let's create something great.`,
+  }]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const [copiedIdx, setCopiedIdx]   = useState(null);
+  const messagesEnd = useRef(null);
+
+  // Studio state
+  const [postText, setPostText]       = useState("");
+  const [hashtags, setHashtags]       = useState([]);
+  const [hashLoading, setHashLoading] = useState(false);
+  const [score, setScore]             = useState(null);
+  const [scoreLoading, setScoreLoading] = useState(false);
+  const [postCopied, setPostCopied]   = useState(false);
+  const [aiWriting, setAiWriting]     = useState(false);
+  const [aiTopic, setAiTopic]         = useState("");
+
+  // Image state
+  const [imgTopic, setImgTopic]           = useState("");
+  const [imgStyle, setImgStyle]           = useState("professional");
+  const [generatedImgs, setGeneratedImgs] = useState([]);
+  const [imgLoading, setImgLoading]       = useState(false);
+  const [loadedImgs, setLoadedImgs]       = useState({});
+
+  useEffect(()=>{ messagesEnd.current?.scrollIntoView({behavior:"smooth"}); },[messages]);
+
+  // ── CHAT ──
+  const sendChat = async (text) => {
+    const msg = text || chatInput.trim();
+    if (!msg || chatLoading) return;
+    setChatInput("");
+    const next = [...messages, {role:"user",content:msg}];
+    setMessages(next);
+    setChatLoading(true);
+    try {
+      const reply = await callClaude(SYSTEM_PROMPT, next.map(m=>({role:m.role,content:m.content})));
+      setMessages([...next, {role:"assistant",content:reply}]);
+    } catch { setMessages([...next, {role:"assistant",content:"⚠️ Network error. Please try again."}]); }
+    setChatLoading(false);
+  };
+
+  // ── STUDIO: Generate hashtags ──
+  const generateHashtags = useCallback(async () => {
+    if (!postText.trim()||hashLoading) return;
+    setHashLoading(true);
+    try {
+      const raw = await callClaude(HASHTAG_SYSTEM, [{role:"user",content:postText}], 200);
+      const clean = raw.replace(/```json|```/g,"").trim();
+      const arr = JSON.parse(clean);
+      setHashtags(Array.isArray(arr)?arr:[]);
+    } catch { setHashtags(["#LinkedIn","#PersonalBrand","#Growth"]); }
+    setHashLoading(false);
+  },[postText, hashLoading]);
+
+  // ── STUDIO: Score post ──
+  const scorePost = useCallback(async () => {
+    if (!postText.trim()||scoreLoading) return;
+    setScoreLoading(true);
+    setScore(null);
+    try {
+      const raw = await callClaude(SCORE_SYSTEM, [{role:"user",content:postText}], 300);
+      const clean = raw.replace(/```json|```/g,"").trim();
+      setScore(JSON.parse(clean));
+    } catch { setScore({score:70,hook:7,readability:7,engagement:7,cta:6,tip:"Add a stronger opening hook."}); }
+    setScoreLoading(false);
+  },[postText, scoreLoading]);
+
+  // ── STUDIO: AI write post ──
+  const aiWritePost = async () => {
+    if (!aiTopic.trim()||aiWriting) return;
+    setAiWriting(true);
+    try {
+      const reply = await callClaude(
+        SYSTEM_PROMPT,
+        [{role:"user",content:`Write a complete LinkedIn post about: "${aiTopic}". Give me ONLY the post text, no template name or tips.`}]
+      );
+      setPostText(reply.trim());
+      setScore(null);
+      setHashtags([]);
+    } catch {}
+    setAiWriting(false);
+  };
+
+  // ── IMAGE GEN ──
+  const generateImages = async () => {
+    if (!imgTopic.trim()||imgLoading) return;
+    setImgLoading(true);
+    setGeneratedImgs([]);
+    setLoadedImgs({});
+    try {
+      const aiPrompt = await callClaude(
+        `Generate a SHORT English image prompt (max 12 words) for a professional LinkedIn banner about the given topic. Return ONLY the prompt.`,
+        [{role:"user",content:`Topic: ${imgTopic}`}], 60
+      );
+      const styleExtra = IMAGE_STYLES.find(s=>s.id===imgStyle)?.extra||"";
+      const final = `${aiPrompt.trim()}, ${styleExtra}, LinkedIn banner, no text, ultra HD`;
+      const seeds = [~~(Math.random()*99999),~~(Math.random()*99999),~~(Math.random()*99999)];
+      setGeneratedImgs(seeds.map(s=>`https://image.pollinations.ai/prompt/${encodeURIComponent(final)}?width=1200&height=628&seed=${s}&nologo=true&enhance=true`));
+    } catch { setImgLoading(false); }
+    setImgLoading(false);
+  };
+
+  const charCount = postText.length;
+  const charColor = charCount>2700?"#e74c3c":charCount>2000?GOLD:"#2ecc71";
+
+  const clearChat = () => {
+    setMessages([{
+      role:"assistant",
+      content:`**Chat cleared!** Fresh start 🚀\n\nI'm your AI LinkedIn Growth Coach.\nWhat topic do you want to post about today?`,
+    }]);
+    setChatInput("");
+  };
+
+  const fmt = c => c
+    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g,"<em>$1</em>")
+    .replace(/\n/g,"<br/>");
+
+  // ─── STYLES ───
+  const S = {
+    app: {minHeight:"100vh",background:"#07090f",color:"#e8eaf0",display:"flex",flexDirection:"column",fontFamily:"'Georgia',serif"},
+    header: {background:`linear-gradient(100deg,#003d70,${LINKEDIN_BLUE})`,padding:"13px 20px",display:"flex",alignItems:"center",gap:"12px",boxShadow:`0 4px 30px rgba(0,119,181,0.4)`,flexWrap:"wrap",rowGap:"8px"},
+    logoBox: {width:40,height:40,borderRadius:"10px",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px",fontWeight:"900",color:LINKEDIN_BLUE,flexShrink:0,boxShadow:"0 2px 10px rgba(0,0,0,0.3)"},
+    nav: {display:"flex",gap:"4px",background:"rgba(0,0,0,0.25)",borderRadius:"10px",padding:"4px"},
+    navBtn: (active)=>({padding:"7px 13px",borderRadius:"7px",border:"none",background:active?"rgba(255,255,255,0.15)":"transparent",color:"white",cursor:"pointer",fontSize:"12px",fontFamily:"sans-serif",fontWeight:active?"700":"400",display:"flex",alignItems:"center",gap:"5px",transition:"all 0.2s",whiteSpace:"nowrap"}),
+    panel: {flex:1,overflowY:"auto",padding:"20px 16px"},
+    card: {background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"14px",padding:"18px"},
+    btn: (variant="primary")=>({
+      padding:"10px 20px",borderRadius:"9px",border:"none",cursor:"pointer",fontSize:"13px",fontFamily:"sans-serif",fontWeight:"700",transition:"all 0.2s",
+      ...(variant==="primary"?{background:`linear-gradient(135deg,#003d70,${LINKEDIN_BLUE})`,color:"#fff",boxShadow:`0 3px 12px rgba(0,119,181,0.35)`}:{}),
+      ...(variant==="gold"?{background:`linear-gradient(135deg,#a07820,${GOLD})`,color:"#fff",boxShadow:`0 3px 12px rgba(201,168,76,0.35)`}:{}),
+      ...(variant==="ghost"?{background:"rgba(255,255,255,0.07)",color:"#e8eaf0",border:"1px solid rgba(255,255,255,0.12)"}:{}),
+    }),
+    label: {fontSize:"11px",opacity:0.5,fontFamily:"sans-serif",letterSpacing:"0.6px",textTransform:"uppercase",marginBottom:"6px",display:"block"},
+    input: {width:"100%",padding:"11px 14px",borderRadius:"10px",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"#e8eaf0",fontSize:"13px",fontFamily:"sans-serif",outline:"none",boxSizing:"border-box",transition:"border 0.2s"},
+  };
+
+  return (
+    <div style={S.app}>
+      {/* ── HEADER ── */}
+      <div style={S.header}>
+        <div style={S.logoBox}>in</div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:"16px",fontWeight:"700",letterSpacing:"-0.2px"}}>Manu's LinkedIn App</div>
+          <div style={{fontSize:"10px",opacity:0.7,fontFamily:"sans-serif"}}>AI Coach · Post Studio · Image Generator</div>
+        </div>
+        <div style={S.nav}>
+          {TABS.map(t=>(
+            <button key={t.id} onClick={()=>setTab(t.id)} style={S.navBtn(tab===t.id)}>
+              <span>{t.icon}</span>
+              <span style={{display:"none"}}>{t.label}</span>
+            </button>
+          ))}
+        </div>
+        <div style={{fontSize:"11px",opacity:0.6,fontFamily:"sans-serif",whiteSpace:"nowrap"}}>
+          {TABS.find(t=>t.id===tab)?.icon} {TABS.find(t=>t.id===tab)?.label}
+        </div>
+      </div>
+
+      {/* ══ AI COACH TAB ══ */}
+      {tab==="coach" && (
+        <>
+          <div style={{...S.panel,paddingBottom:"8px"}}>
+            <div style={{maxWidth:"760px",margin:"0 auto",display:"flex",flexDirection:"column",gap:"12px"}}>
+              {/* Quick action chips */}
+              <div style={{display:"flex",gap:"7px",flexWrap:"wrap",paddingBottom:"4px",alignItems:"center"}}>
+                {["Write me a viral post","Give me a strong hook","Review my content strategy","Best posting times on LinkedIn"].map((p,i)=>(
+                  <button key={i} onClick={()=>sendChat(p)} style={{
+                    background:"rgba(0,119,181,0.1)",border:"1px solid rgba(0,119,181,0.25)",
+                    borderRadius:"18px",padding:"5px 13px",color:"#70b8e8",cursor:"pointer",
+                    fontSize:"11px",fontFamily:"sans-serif",transition:"all 0.15s",
+                  }}>{p}</button>
+                ))}
+                <button onClick={clearChat} style={{
+                  marginLeft:"auto",background:"rgba(231,76,60,0.1)",border:"1px solid rgba(231,76,60,0.25)",
+                  borderRadius:"18px",padding:"5px 13px",color:"#e74c3c",cursor:"pointer",
+                  fontSize:"11px",fontFamily:"sans-serif",display:"flex",alignItems:"center",gap:"5px",
+                  transition:"all 0.15s",whiteSpace:"nowrap",
+                }}>🗑️ Clear Chat</button>
+              </div>
+
+              {messages.map((msg,i)=>(
+                <div key={i} style={{display:"flex",justifyContent:msg.role==="user"?"flex-end":"flex-start"}}>
+                  <div style={{
+                    maxWidth:"82%",
+                    background:msg.role==="user"?`linear-gradient(135deg,#003d70,${LINKEDIN_BLUE})`:"rgba(255,255,255,0.055)",
+                    borderRadius:msg.role==="user"?"18px 18px 4px 18px":"18px 18px 18px 4px",
+                    padding:"13px 16px",
+                    border:msg.role==="assistant"?"1px solid rgba(255,255,255,0.07)":"none",
+                    fontSize:"13.5px",lineHeight:"1.7",
+                    boxShadow:msg.role==="user"?`0 4px 16px rgba(0,119,181,0.3)`:"none",
+                  }}>
+                    {msg.role==="assistant"&&(
+                      <div style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"7px",opacity:0.4,fontSize:"10px",fontFamily:"sans-serif"}}>
+                        <div style={{width:13,height:13,background:LINKEDIN_BLUE,borderRadius:"3px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"7px",color:"#fff",fontWeight:"900"}}>in</div>
+                        LinkedIn Coach
+                      </div>
+                    )}
+                    <div dangerouslySetInnerHTML={{__html:fmt(msg.content)}} style={{fontFamily:msg.role==="assistant"?"Georgia,serif":"sans-serif"}}/>
+                    {msg.role==="assistant"&&msg.content.length>80&&(
+                      <div style={{display:"flex",gap:"6px",marginTop:"9px",flexWrap:"wrap"}}>
+                        <button onClick={()=>{navigator.clipboard.writeText(msg.content);setCopiedIdx(i);setTimeout(()=>setCopiedIdx(null),2000);}}
+                          style={{...S.btn("ghost"),padding:"4px 10px",fontSize:"10px"}}>
+                          {copiedIdx===i?"✅ Copied":"📋 Copy"}
+                        </button>
+                        <button onClick={()=>{setPostText(msg.content);setTab("studio");}}
+                          style={{...S.btn("ghost"),padding:"4px 10px",fontSize:"10px"}}>
+                          ✍️ Open in Studio
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {chatLoading&&(
+                <div style={{display:"flex"}}>
+                  <div style={{background:"rgba(255,255,255,0.055)",borderRadius:"18px",padding:"14px 18px",border:"1px solid rgba(255,255,255,0.07)"}}>
+                    <div style={{display:"flex",gap:"5px"}}>
+                      {[0,1,2].map(d=>(<div key={d} style={{width:7,height:7,borderRadius:"50%",background:LINKEDIN_BLUE,animation:"bounce 1.2s infinite",animationDelay:`${d*0.2}s`}}/>))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEnd}/>
+            </div>
+          </div>
+
+          {/* Chat Input */}
+          <div style={{padding:"10px 16px 14px",maxWidth:"760px",margin:"0 auto",width:"100%"}}>
+            <div style={{display:"flex",gap:"9px",alignItems:"flex-end",background:"rgba(255,255,255,0.055)",borderRadius:"15px",border:"1px solid rgba(255,255,255,0.1)",padding:"9px 9px 9px 14px",boxShadow:`0 0 20px rgba(0,119,181,0.08)`}}>
+              <textarea value={chatInput} onChange={e=>setChatInput(e.target.value)}
+                onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();}}}
+                placeholder="Ask your LinkedIn coach anything... (Enter to send)"
+                rows={1}
+                style={{flex:1,background:"transparent",border:"none",outline:"none",color:"#e8eaf0",fontSize:"13.5px",resize:"none",fontFamily:"sans-serif",lineHeight:"1.5",maxHeight:"95px",overflowY:"auto"}}
+                onInput={e=>{e.target.style.height="auto";e.target.style.height=Math.min(e.target.scrollHeight,95)+"px";}}
+              />
+              <button onClick={()=>sendChat()} disabled={chatLoading||!chatInput.trim()}
+                style={{...S.btn("primary"),padding:"9px 14px",opacity:chatLoading||!chatInput.trim()?0.4:1,fontSize:"16px"}}>→</button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ══ POST STUDIO TAB ══ */}
+      {tab==="studio" && (
+        <div style={S.panel}>
+          <div style={{maxWidth:"1100px",margin:"0 auto"}}>
+            {/* AI Write Row */}
+            <div style={{...S.card,marginBottom:"16px",background:"rgba(0,119,181,0.07)",border:`1px solid rgba(0,119,181,0.2)`}}>
+              <span style={S.label}>⚡ AI Write — Enter a topic and let AI draft your post</span>
+              <div style={{display:"flex",gap:"9px"}}>
+                <input value={aiTopic} onChange={e=>setAiTopic(e.target.value)}
+                  onKeyDown={e=>e.key==="Enter"&&aiWritePost()}
+                  placeholder='e.g. "How I got 10 clients without cold DMs"'
+                  style={S.input}/>
+                <button onClick={aiWritePost} disabled={aiWriting||!aiTopic.trim()}
+                  style={{...S.btn("gold"),whiteSpace:"nowrap",opacity:aiWriting||!aiTopic.trim()?0.5:1}}>
+                  {aiWriting?"✨ Writing...":"✨ Write Post"}
+                </button>
+              </div>
+            </div>
+
+            {/* Two-column layout */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px",alignItems:"start"}}>
+              {/* LEFT: Editor */}
+              <div style={{display:"flex",flexDirection:"column",gap:"12px"}}>
+                <div style={S.card}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
+                    <span style={S.label}>✍️ Write Your Post</span>
+                    <span style={{fontSize:"11px",fontFamily:"sans-serif",color:charColor,fontWeight:"600"}}>
+                      {charCount}/3000
+                    </span>
+                  </div>
+                  <textarea value={postText} onChange={e=>{setPostText(e.target.value);setScore(null);}}
+                    placeholder="Start typing your post here, or use AI Write above...&#10;&#10;Tip: Start with a hook that stops the scroll!"
+                    style={{...S.input,minHeight:"220px",resize:"vertical",lineHeight:"1.65",fontFamily:"Georgia,serif",fontSize:"13.5px",padding:"13px"}}
+                  />
+                  <div style={{display:"flex",gap:"8px",marginTop:"10px",flexWrap:"wrap"}}>
+                    <button onClick={()=>{navigator.clipboard.writeText(postText+(hashtags.length?"\n\n"+hashtags.join(" "):""));setPostCopied(true);setTimeout(()=>setPostCopied(false),2000);}}
+                      disabled={!postText.trim()} style={{...S.btn("primary"),opacity:!postText.trim()?0.4:1}}>
+                      {postCopied?"✅ Copied!":"📋 Copy Post"}
+                    </button>
+                    <button onClick={generateHashtags} disabled={!postText.trim()||hashLoading}
+                      style={{...S.btn("ghost"),opacity:!postText.trim()||hashLoading?0.4:1}}>
+                      {hashLoading?"⏳ Loading...":"# Get Hashtags"}
+                    </button>
+                    <button onClick={scorePost} disabled={!postText.trim()||scoreLoading}
+                      style={{...S.btn("ghost"),opacity:!postText.trim()||scoreLoading?0.4:1}}>
+                      {scoreLoading?"⏳ Scoring...":"📊 Score Post"}
+                    </button>
+                    <button onClick={()=>{setPostText(postText+"\n\n"+hashtags.join(" "));}} disabled={!hashtags.length}
+                      style={{...S.btn("ghost"),opacity:!hashtags.length?0.3:1,fontSize:"11px"}}>
+                      + Add Hashtags
+                    </button>
+                    <button onClick={()=>{setPostText("");setScore(null);setHashtags([]);setAiTopic("");}}
+                      disabled={!postText.trim()} style={{...S.btn("ghost"),opacity:!postText.trim()?0.3:1,color:"#e74c3c",borderColor:"rgba(231,76,60,0.25)",background:"rgba(231,76,60,0.08)"}}>
+                      🗑️ Clear All
+                    </button>
+                  </div>
+                </div>
+
+                {/* Hashtags */}
+                {hashtags.length>0&&(
+                  <div style={S.card}>
+                    <span style={S.label}># AI Suggested Hashtags</span>
+                    <div style={{display:"flex",flexWrap:"wrap",gap:"7px"}}>
+                      {hashtags.map((h,i)=>(
+                        <span key={i} style={{background:"rgba(0,119,181,0.15)",border:"1px solid rgba(0,119,181,0.3)",borderRadius:"16px",padding:"4px 12px",fontSize:"12px",color:"#70b8e8",fontFamily:"sans-serif",cursor:"pointer"}}
+                          onClick={()=>setPostText(t=>t+"\n"+h)}>
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Score Card */}
+                {score&&(
+                  <div style={S.card}>
+                    <span style={S.label}>📊 Post Score Analysis</span>
+                    <div style={{display:"flex",alignItems:"center",gap:"18px",marginBottom:"14px"}}>
+                      <ScoreRing score={score.score}/>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:"13px",fontFamily:"sans-serif",opacity:0.7,marginBottom:"6px"}}>Overall Score</div>
+                        <div style={{fontSize:"12px",fontFamily:"sans-serif",background:"rgba(255,200,0,0.08)",border:"1px solid rgba(255,200,0,0.18)",borderRadius:"8px",padding:"7px 10px",lineHeight:"1.5"}}>
+                          💡 {score.tip}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+                      {[["🎣 Hook",score.hook],["📖 Readability",score.readability],["💬 Engagement",score.engagement],["📢 CTA",score.cta]].map(([label,val])=>(
+                        <div key={label} style={{background:"rgba(255,255,255,0.04)",borderRadius:"8px",padding:"9px 12px"}}>
+                          <div style={{fontSize:"11px",fontFamily:"sans-serif",opacity:0.5,marginBottom:"4px"}}>{label}</div>
+                          <div style={{display:"flex",alignItems:"center",gap:"7px"}}>
+                            <div style={{flex:1,height:"5px",borderRadius:"3px",background:"rgba(255,255,255,0.1)",overflow:"hidden"}}>
+                              <div style={{height:"100%",width:`${val*10}%`,background:val>=7?"#2ecc71":val>=5?GOLD:"#e74c3c",borderRadius:"3px",transition:"width 0.6s ease"}}/>
+                            </div>
+                            <span style={{fontSize:"12px",fontWeight:"700",fontFamily:"sans-serif",color:val>=7?"#2ecc71":val>=5?GOLD:"#e74c3c"}}>{val}/10</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* RIGHT: Live Preview */}
+              <div>
+                <span style={S.label}>👁️ Live LinkedIn Preview</span>
+                <LinkedInPreview text={postText} hashtags={hashtags}/>
+                <div style={{marginTop:"10px",background:"rgba(0,119,181,0.06)",border:"1px solid rgba(0,119,181,0.15)",borderRadius:"10px",padding:"10px 13px",fontSize:"11px",fontFamily:"sans-serif",opacity:0.65}}>
+                  📌 This is exactly how your post will look on LinkedIn. Copy → paste → post!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ IMAGE GENERATOR TAB ══ */}
+      {tab==="image" && (
+        <div style={S.panel}>
+          <div style={{maxWidth:"720px",margin:"0 auto"}}>
+            <div style={{textAlign:"center",marginBottom:"24px"}}>
+              <div style={{fontSize:"32px",marginBottom:"8px"}}>🎨</div>
+              <h2 style={{margin:"0 0 6px",fontSize:"20px",color:"#70b8e8",fontWeight:"700"}}>LinkedIn Banner Generator</h2>
+              <p style={{margin:0,opacity:0.45,fontSize:"12px",fontFamily:"sans-serif"}}>
+                AI builds the perfect prompt → Pollinations generates 3 unique banners — completely free
+              </p>
+            </div>
+
+            <div style={{...S.card,marginBottom:"14px"}}>
+              <span style={S.label}>📝 Your Topic / Niche</span>
+              <input value={imgTopic} onChange={e=>setImgTopic(e.target.value)}
+                onKeyDown={e=>e.key==="Enter"&&generateImages()}
+                placeholder="e.g. Freelance developer, Sales coach, HR expert, Startup founder..."
+                style={S.input}/>
+            </div>
+
+            <div style={{...S.card,marginBottom:"16px"}}>
+              <span style={S.label}>🎨 Choose Style</span>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"7px"}}>
+                {IMAGE_STYLES.map(s=>(
+                  <div key={s.id} onClick={()=>setImgStyle(s.id)} style={{
+                    padding:"10px 7px",borderRadius:"9px",textAlign:"center",cursor:"pointer",
+                    border:`1px solid ${imgStyle===s.id?LINKEDIN_BLUE:"rgba(255,255,255,0.08)"}`,
+                    background:imgStyle===s.id?"rgba(0,119,181,0.18)":"rgba(255,255,255,0.03)",
+                    fontSize:"12px",fontFamily:"sans-serif",transition:"all 0.15s",
+                    color:imgStyle===s.id?"#70b8e8":"#e8eaf0",fontWeight:imgStyle===s.id?"700":"400",
+                  }}>{s.label}</div>
+                ))}
+              </div>
+            </div>
+
+            <button onClick={generateImages} disabled={!imgTopic.trim()||imgLoading}
+              style={{...S.btn("primary"),width:"100%",padding:"14px",fontSize:"14px",justifyContent:"center",display:"flex",alignItems:"center",gap:"8px",opacity:!imgTopic.trim()||imgLoading?0.45:1}}>
+              {imgLoading?"⏳ Generating your banners...":"✨ Generate 3 Banner Variations"}
+            </button>
+
+            {imgLoading&&(
+              <div style={{marginTop:"18px",display:"flex",flexDirection:"column",gap:"10px"}}>
+                {[0,1,2].map(i=>(
+                  <div key={i} style={{height:"140px",borderRadius:"11px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",animation:"pulse 1.5s infinite",animationDelay:`${i*0.3}s`}}>
+                    <span style={{opacity:0.2,fontFamily:"sans-serif",fontSize:"12px"}}>Generating variation {i+1}...</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!imgLoading&&generatedImgs.length>0&&(
+              <div style={{marginTop:"18px",display:"flex",flexDirection:"column",gap:"14px"}}>
+                {generatedImgs.map((url,i)=>(
+                  <div key={i} style={{borderRadius:"12px",overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 8px 30px rgba(0,0,0,0.4)"}}>
+                    <div style={{position:"relative",background:"rgba(255,255,255,0.03)",minHeight:"110px"}}>
+                      {!loadedImgs[i]&&(
+                        <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          <span style={{opacity:0.25,fontFamily:"sans-serif",fontSize:"12px"}}>Loading...</span>
+                        </div>
+                      )}
+                      <img src={url} alt={`Banner ${i+1}`}
+                        onLoad={()=>setLoadedImgs(p=>({...p,[i]:true}))}
+                        onError={e=>{e.target.style.display="none";}}
+                        style={{width:"100%",display:"block",opacity:loadedImgs[i]?1:0,transition:"opacity 0.4s"}}/>
+                      <div style={{position:"absolute",top:"8px",left:"8px",background:"rgba(0,0,0,0.6)",borderRadius:"5px",padding:"2px 8px",fontSize:"10px",fontFamily:"sans-serif",backdropFilter:"blur(4px)"}}>
+                        Variation {i+1}
+                      </div>
+                    </div>
+                    <div style={{background:"rgba(255,255,255,0.03)",padding:"10px 13px",display:"flex",justifyContent:"flex-end"}}>
+                      <a href={url} target="_blank" rel="noreferrer"
+                        style={{...S.btn("primary"),textDecoration:"none",padding:"6px 16px",fontSize:"12px"}}>
+                        ⬇ Download
+                      </a>
+                    </div>
+                  </div>
+                ))}
+                <div style={{background:"rgba(255,200,0,0.06)",border:"1px solid rgba(255,200,0,0.15)",borderRadius:"10px",padding:"10px 14px",fontSize:"12px",fontFamily:"sans-serif",opacity:0.75}}>
+                  💡 <strong>Tip:</strong> Download your favorite and use it as your LinkedIn post image or profile banner. Generate again for fresh variations!
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ══ TEMPLATES TAB ══ */}
+      {tab==="templates" && (
+        <div style={S.panel}>
+          <div style={{maxWidth:"760px",margin:"0 auto"}}>
+            <div style={{textAlign:"center",marginBottom:"22px"}}>
+              <h2 style={{margin:"0 0 6px",fontSize:"20px",color:"#70b8e8"}}>Proven Content Templates</h2>
+              <p style={{margin:0,opacity:0.4,fontSize:"12px",fontFamily:"sans-serif"}}>Click any template to open it in AI Coach — ready to write</p>
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"20px"}}>
+              {TEMPLATES.map(t=>(
+                <div key={t.id}
+                  onClick={()=>{setTab("coach");setTimeout(()=>sendChat(`Write a LinkedIn post using the ${t.name} template. First ask me for the topic.`),100);}}
+                  style={{...S.card,cursor:"pointer",transition:"all 0.2s",position:"relative",overflow:"hidden"}}
+                  onMouseEnter={e=>{e.currentTarget.style.background="rgba(0,119,181,0.13)";e.currentTarget.style.borderColor=LINKEDIN_BLUE;e.currentTarget.style.transform="translateY(-2px)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.04)";e.currentTarget.style.borderColor="rgba(255,255,255,0.08)";e.currentTarget.style.transform="none";}}>
+                  <div style={{position:"absolute",top:0,left:0,width:"3px",height:"100%",background:t.color,borderRadius:"2px 0 0 2px"}}/>
+                  <div style={{paddingLeft:"8px"}}>
+                    <div style={{fontSize:"26px",marginBottom:"6px"}}>{t.emoji}</div>
+                    <div style={{fontWeight:"700",fontSize:"14px",marginBottom:"3px"}}>{t.name}</div>
+                    <div style={{fontSize:"11px",opacity:0.45,fontFamily:"sans-serif"}}>{t.desc}</div>
+                  </div>
+                  <div style={{position:"absolute",top:"10px",right:"10px",background:t.color,color:"#fff",fontSize:"9px",padding:"2px 8px",borderRadius:"8px",fontFamily:"sans-serif",fontWeight:"700"}}>Use →</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Stats bar */}
+            <div style={{...S.card,background:"rgba(0,119,181,0.07)",border:`1px solid rgba(0,119,181,0.18)`}}>
+              <div style={{fontWeight:"700",marginBottom:"12px",color:"#70b8e8",fontSize:"13px"}}>⚡ Data Behind This App</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"12px",textAlign:"center"}}>
+                {[["987","Posts Analyzed"],["23.6M","Total Impressions"],["50","Posts Deep-Dived"],["15","Templates"]].map(([v,l])=>(
+                  <div key={l}>
+                    <div style={{fontSize:"22px",fontWeight:"700",color:LINKEDIN_BLUE,fontFamily:"Georgia,serif"}}>{v}</div>
+                    <div style={{fontSize:"10px",opacity:0.45,fontFamily:"sans-serif",marginTop:"2px"}}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── FOOTER ── */}
+      <a href="https://www.linkedin.com/in/manugupta79" target="_blank" rel="noreferrer"
+        style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"8px",padding:"10px 16px",background:"rgba(255,255,255,0.025)",borderTop:"1px solid rgba(255,255,255,0.05)",textDecoration:"none",transition:"background 0.2s",cursor:"pointer"}}
+        onMouseEnter={e=>e.currentTarget.style.background=`rgba(0,119,181,0.1)`}
+        onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.025)"}>
+        <div style={{width:20,height:20,borderRadius:"5px",background:LINKEDIN_BLUE,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"10px",fontWeight:"900",color:"#fff"}}>in</div>
+        <span style={{fontSize:"11px",fontFamily:"sans-serif",color:"rgba(255,255,255,0.4)",letterSpacing:"0.3px"}}>
+          Designed by <strong style={{color:"#70b8e8",fontWeight:"700"}}>Manu Gupta</strong>
+        </span>
+        <span style={{fontSize:"10px",color:"rgba(0,119,181,0.6)",fontFamily:"sans-serif"}}>↗</span>
+      </a>
+
+      <style>{`
+        @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+        @keyframes pulse{0%,100%{opacity:0.3}50%{opacity:0.6}}
+        *{box-sizing:border-box;scrollbar-width:thin;scrollbar-color:rgba(0,119,181,0.3) transparent}
+        ::-webkit-scrollbar{width:3px}
+        ::-webkit-scrollbar-thumb{background:rgba(0,119,181,0.3);border-radius:3px}
+        input::placeholder,textarea::placeholder{color:rgba(232,234,240,0.25)}
+        input:focus,textarea:focus{border-color:rgba(0,119,181,0.5) !important}
+      `}</style>
+    </div>
+  );
+}
