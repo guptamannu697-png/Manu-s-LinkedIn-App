@@ -229,9 +229,41 @@
   @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.6} }
   @keyframes fadein { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
   .fadein { animation: fadein 0.3s ease forwards; }
+
+  /* ── API KEY MODAL ── */
+  #api-modal { position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px; }
+  .modal-box { background:#0d1117;border:1px solid rgba(0,119,181,0.4);border-radius:18px;padding:32px 28px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.6); }
+  #key-input { width:100%;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#e8eaf0;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;letter-spacing:0.5px;margin:10px 0 6px; }
+  #key-input:focus { border-color:rgba(0,119,181,0.5); }
+  .key-saved { background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.3);border-radius:8px;padding:5px 12px;font-size:11px;color:#2ecc71;font-family:'DM Sans',sans-serif; }
 </style>
 </head>
 <body>
+
+<!-- ── API KEY MODAL ── -->
+<div id="api-modal">
+  <div class="modal-box">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <div style="width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#0077B5;flex-shrink:0;font-family:'Playfair Display',serif">in</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;font-family:'Playfair Display',serif">Manu's LinkedIn App</div>
+        <div style="font-size:10px;opacity:0.6">Enter your Anthropic API Key to get started</div>
+      </div>
+    </div>
+    <div style="font-size:13px;opacity:0.7;margin-bottom:6px;font-family:'DM Sans',sans-serif">🔑 Anthropic API Key</div>
+    <input id="key-input" type="password" placeholder="sk-ant-api03-..." onkeydown="if(event.key==='Enter')saveKey()"/>
+    <div style="font-size:11px;opacity:0.45;font-family:'DM Sans',sans-serif;margin-bottom:18px">Your key is stored only in your browser — never sent anywhere except Anthropic.</div>
+    <button class="btn btn-primary" onclick="saveKey()" style="width:100%;padding:13px;font-size:14px">🚀 Start Using the App</button>
+    <div style="margin-top:16px;padding:12px 14px;background:rgba(0,119,181,0.07);border:1px solid rgba(0,119,181,0.2);border-radius:10px;font-size:11px;font-family:'DM Sans',sans-serif;line-height:1.7;opacity:0.8">
+      <strong>How to get a FREE API Key:</strong><br>
+      1. Go to <strong>platform.anthropic.com</strong><br>
+      2. Sign up (free) → Dashboard → API Keys<br>
+      3. Click "Create Key" → Copy → Paste above<br>
+      <span style="opacity:0.6">Free tier gives you enough credits to use this app daily.</span>
+    </div>
+  </div>
+</div>
+
 
 <!-- ── HEADER ── -->
 <div id="header">
@@ -247,6 +279,7 @@
     <button class="nav-btn" onclick="switchTab('templates')" id="tab-templates">📋</button>
   </div>
   <div class="tab-label" id="tab-name">🤖 AI Coach</div>
+  <button onclick="showApiModal()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-size:10px;font-family:'DM Sans',sans-serif;white-space:nowrap">🔑 API Key</button>
 </div>
 
 <!-- ══════════════ AI COACH TAB ══════════════ -->
@@ -381,6 +414,9 @@
     <button class="btn btn-primary" onclick="generateImages()" id="gen-btn" style="width:100%;padding:14px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px">
       ✨ Generate 3 Banner Variations
     </button>
+    <div style="background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:12px;opacity:0.8">
+      ⚠️ <strong>Note:</strong> Images only load on GitHub Pages or when opened directly in a browser. They won't show inside Claude's preview due to security restrictions — but everything works perfectly once deployed!
+    </div>
     <div id="img-loading" style="display:none;margin-top:18px;display:flex;flex-direction:column;gap:10px">
       <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite">Generating variation 1...</div>
       <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite;animation-delay:0.3s">Generating variation 2...</div>
@@ -450,9 +486,26 @@ let hashtags    = [];
 let imgStyle    = "professional";
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
+function saveKey() {
+  const k = document.getElementById("key-input").value.trim();
+  if (!k || !k.startsWith("sk-ant")) { alert("Please enter a valid Anthropic API key (starts with sk-ant)"); return; }
+  localStorage.setItem("manu_api_key", k);
+  document.getElementById("api-modal").style.display = "none";
+  addBubble("assistant", `<strong>Welcome to Manu's LinkedIn App!</strong> 🚀<br><br>API key saved! You're all set.<br><br>I can help you:<br>→ Write viral, scroll-stopping posts<br>→ Choose the right content template<br>→ Craft hooks that get engagement<br>→ Build your personal brand on LinkedIn<br><br>What's your topic or niche? Let's create something great.`);
+}
+
+function showApiModal() {
+  document.getElementById("api-modal").style.display = "flex";
+}
+
 (function init() {
-  // Welcome message
-  addBubble("assistant", `<strong>Welcome to Manu's LinkedIn App!</strong> 🚀<br><br>I'm your AI-powered LinkedIn Growth Coach.<br><br>I can help you:<br>→ Write viral, scroll-stopping posts<br>→ Choose the right content template<br>→ Craft hooks that get engagement<br>→ Build your personal brand on LinkedIn<br><br>What's your topic or niche? Let's create something great.`);
+  const savedKey = localStorage.getItem("manu_api_key");
+  if (savedKey) {
+    document.getElementById("api-modal").style.display = "none";
+    addBubble("assistant", `<strong>Welcome back to Manu's LinkedIn App!</strong> 🚀<br><br>Ready to create viral content?<br><br>→ Write posts · Score content · Generate banners<br><br>What's your topic today?`);
+  } else {
+    document.getElementById("chat-messages").innerHTML = "";
+  }
 
   // Build templates
   const tg = document.getElementById("tmpl-grid");
@@ -486,12 +539,20 @@ function switchTab(id) {
 
 // ─── API CALL ─────────────────────────────────────────────────────────────────
 async function callClaude(system, messages, maxTokens=1000) {
+  const key = localStorage.getItem("manu_api_key");
+  if (!key) { showApiModal(); throw new Error("No API key"); }
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
     body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:maxTokens, system, messages }),
   });
   const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
   return data.content?.map(b=>b.text).join("") || "";
 }
 
