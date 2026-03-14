@@ -24,10 +24,9 @@
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-thumb { background: rgba(0,119,181,0.35); border-radius: 3px; }
   input::placeholder, textarea::placeholder { color: rgba(232,234,240,0.25); }
-  input:focus, textarea:focus { outline: none; border-color: rgba(0,119,181,0.5) !important; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: rgba(0,119,181,0.5) !important; }
   a { text-decoration: none; }
 
-  /* ── HEADER ── */
   #header {
     background: linear-gradient(100deg, var(--lb2), var(--lb));
     padding: 13px 20px; display: flex; align-items: center; gap: 12px;
@@ -52,22 +51,18 @@
   .nav-btn:hover { background: rgba(255,255,255,0.1); }
   .tab-label { font-size: 11px; opacity: 0.65; white-space: nowrap; }
 
-  /* ── PANELS ── */
   .panel { flex: 1; overflow-y: auto; padding: 20px 16px; }
   .inner { max-width: 760px; margin: 0 auto; }
   .inner-lg { max-width: 1100px; margin: 0 auto; }
 
-  /* ── CARDS ── */
   .card {
     background: var(--bg2); border: 1px solid var(--border);
     border-radius: 14px; padding: 18px; margin-bottom: 14px;
   }
   .card-blue { background: rgba(0,119,181,0.07); border-color: rgba(0,119,181,0.2); }
 
-  /* ── LABELS ── */
   .lbl { font-size: 11px; color: var(--muted); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 6px; display: block; font-weight: 600; }
 
-  /* ── BUTTONS ── */
   .btn { padding: 10px 20px; border-radius: 9px; border: none; cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 700; transition: all 0.2s; }
   .btn-primary { background: linear-gradient(135deg, var(--lb2), var(--lb)); color: #fff; box-shadow: 0 3px 12px rgba(0,119,181,0.35); }
   .btn-primary:hover { box-shadow: 0 5px 18px rgba(0,119,181,0.5); transform: translateY(-1px); }
@@ -79,13 +74,14 @@
   .btn-danger:hover { background: rgba(231,76,60,0.18); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
-  /* ── INPUTS ── */
-  .inp {
+  .inp, .sel {
     width: 100%; padding: 11px 14px; border-radius: 10px;
     background: var(--bg3); border: 1px solid var(--border);
     color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif;
     transition: border 0.2s;
   }
+  .sel option { background: #10141d; color: #fff; }
+
   .textarea-post {
     width: 100%; min-height: 220px; resize: vertical; padding: 13px;
     background: var(--bg3); border: 1px solid var(--border);
@@ -93,7 +89,6 @@
     line-height: 1.7; border-radius: 10px; transition: border 0.2s;
   }
 
-  /* ── CHIPS ── */
   .chip {
     background: rgba(0,119,181,0.1); border: 1px solid rgba(0,119,181,0.25);
     border-radius: 18px; padding: 5px 13px; color: #70b8e8;
@@ -110,7 +105,6 @@
   }
   .hash-chip:hover { background: rgba(0,119,181,0.28); }
 
-  /* ── CHAT ── */
   #chat-messages { display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
   .msg { display: flex; }
   .msg.user { justify-content: flex-end; }
@@ -127,7 +121,6 @@
   .dot:nth-child(2) { animation-delay: 0.2s; }
   .dot:nth-child(3) { animation-delay: 0.4s; }
 
-  /* ── CHAT INPUT ── */
   #chat-input-area {
     padding: 10px 16px 14px; max-width: 760px; margin: 0 auto; width: 100%;
   }
@@ -143,13 +136,13 @@
     font-family: 'DM Sans', sans-serif; line-height: 1.5; max-height: 95px; overflow-y: auto;
   }
 
-  /* ── STUDIO GRID ── */
   .studio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
   @media (max-width: 700px) { .studio-grid { grid-template-columns: 1fr; } }
   .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
   .char-count { font-size: 11px; font-weight: 700; font-family: 'DM Sans', sans-serif; }
+  .mini-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+  @media (max-width: 520px) { .mini-grid { grid-template-columns:1fr; } }
 
-  /* ── SCORE ── */
   .score-row { display: flex; align-items: center; gap: 18px; margin-bottom: 14px; }
   .score-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .score-bar-card { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 9px 12px; }
@@ -159,7 +152,6 @@
   .bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
   .score-val { font-size: 12px; font-weight: 700; }
 
-  /* ── LINKEDIN PREVIEW ── */
   #li-preview {
     background: #fff; border-radius: 10px; overflow: hidden;
     box-shadow: 0 2px 16px rgba(0,0,0,0.22); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -179,7 +171,6 @@
   .li-action { display: flex; align-items: center; gap: 5px; padding: 10px 12px; border-radius: 6px; cursor: pointer; color: #666; font-size: 13px; font-weight: 600; }
   .li-action:hover { background: #f3f3f3; }
 
-  /* ── IMAGE GEN ── */
   .style-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
   .style-card {
     padding: 10px 7px; border-radius: 9px; text-align: center; cursor: pointer;
@@ -191,7 +182,6 @@
   .img-placeholder { height: 140px; background: var(--bg2); display: flex; align-items: center; justify-content: center; font-size: 12px; opacity: 0.25; }
   .img-footer { background: rgba(255,255,255,0.03); padding: 10px 13px; display: flex; justify-content: flex-end; }
 
-  /* ── TEMPLATES ── */
   .tmpl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 500px) { .tmpl-grid { grid-template-columns: 1fr; } }
   .tmpl-card {
@@ -208,7 +198,6 @@
   .stat-val { font-size: 22px; font-weight: 700; color: var(--lb); font-family: 'Playfair Display', serif; }
   .stat-lbl { font-size: 10px; opacity: 0.45; margin-top: 2px; }
 
-  /* ── FOOTER ── */
   #footer {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     padding: 10px 16px; background: rgba(255,255,255,0.025);
@@ -219,58 +208,50 @@
   .footer-text { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.3px; }
   .footer-text strong { color: #70b8e8; }
 
-  /* ── TIP BOX ── */
   .tip-box { background: rgba(255,200,0,0.07); border: 1px solid rgba(255,200,0,0.18); border-radius: 10px; padding: 10px 14px; font-size: 12px; opacity: 0.8; margin-top: 14px; }
   .info-box { background: rgba(0,119,181,0.06); border: 1px solid rgba(0,119,181,0.15); border-radius: 10px; padding: 10px 14px; font-size: 11px; opacity: 0.7; margin-top: 10px; }
   .score-tip { background: rgba(255,200,0,0.08); border: 1px solid rgba(255,200,0,0.18); border-radius: 8px; padding: 7px 10px; font-size: 12px; line-height: 1.5; flex: 1; }
 
-  /* ── ANIMATIONS ── */
   @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
   @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.6} }
   @keyframes fadein { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
   .fadein { animation: fadein 0.3s ease forwards; }
 
-  /* ── API KEY MODAL ── */
   #api-modal { position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px; }
   .modal-box { background:#0d1117;border:1px solid rgba(0,119,181,0.4);border-radius:18px;padding:32px 28px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.6); }
   #key-input { width:100%;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#e8eaf0;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;letter-spacing:0.5px;margin:10px 0 6px; }
   #key-input:focus { border-color:rgba(0,119,181,0.5); }
-  .key-saved { background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.3);border-radius:8px;padding:5px 12px;font-size:11px;color:#2ecc71;font-family:'DM Sans',sans-serif; }
 </style>
 </head>
 <body>
 
-<!-- ── API KEY MODAL ── -->
 <div id="api-modal">
   <div class="modal-box">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
       <div style="width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#0077B5;flex-shrink:0;font-family:'Playfair Display',serif">in</div>
       <div>
         <div style="font-size:16px;font-weight:700;font-family:'Playfair Display',serif">Manu's LinkedIn App</div>
-        <div style="font-size:10px;opacity:0.6">Enter your FREE Google Gemini API Key</div>
+        <div style="font-size:10px;opacity:0.6">Enter your Google Gemini API Key</div>
       </div>
     </div>
-    <div style="font-size:13px;opacity:0.7;margin-bottom:6px;font-family:'DM Sans',sans-serif">🔑 Google Gemini API Key (FREE)</div>
+    <div style="font-size:13px;opacity:0.7;margin-bottom:6px;font-family:'DM Sans',sans-serif">🔑 Google Gemini API Key</div>
     <input id="key-input" type="password" placeholder="AIza..." onkeydown="if(event.key==='Enter')saveKey()"/>
-    <div style="font-size:11px;opacity:0.45;font-family:'DM Sans',sans-serif;margin-bottom:18px">Your key is stored only in your browser — never sent anywhere except Google.</div>
+    <div style="font-size:11px;opacity:0.45;font-family:'DM Sans',sans-serif;margin-bottom:18px">Your key stays in your browser and is used only for Gemini requests.</div>
     <button class="btn btn-primary" onclick="saveKey()" style="width:100%;padding:13px;font-size:14px">🚀 Start Using the App</button>
     <div style="margin-top:16px;padding:12px 14px;background:rgba(0,119,181,0.07);border:1px solid rgba(0,119,181,0.2);border-radius:10px;font-size:11px;font-family:'DM Sans',sans-serif;line-height:1.7;opacity:0.8">
-      <strong>How to get a FREE Google Gemini Key:</strong><br>
+      <strong>How to get a Gemini API Key:</strong><br>
       1. Go to <strong>aistudio.google.com</strong><br>
       2. Login with your Google account<br>
-      3. Click <strong>"Get API Key"</strong> → Create → Copy<br>
-      <span style="opacity:0.6">✅ 100% Free — No credit card needed ever!</span>
+      3. Click <strong>Get API Key</strong> → Create → Copy
     </div>
   </div>
 </div>
 
-
-<!-- ── HEADER ── -->
 <div id="header">
   <div class="logo-box">in</div>
   <div style="flex:1;min-width:0">
     <div class="header-title">Manu's LinkedIn App</div>
-    <div class="header-sub">AI Coach · Post Studio · Image Generator · Templates<br><span style="font-size:9px;opacity:0.5">Powered by Google Gemini — Free</span></div>
+    <div class="header-sub">AI Coach · Post Studio · Image Generator · Templates<br><span style="font-size:9px;opacity:0.5">Powered by Google Gemini</span></div>
   </div>
   <div class="nav">
     <button class="nav-btn active" onclick="switchTab('coach')" id="tab-coach">🤖</button>
@@ -282,25 +263,22 @@
   <button onclick="showApiModal()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-size:10px;font-family:'DM Sans',sans-serif;white-space:nowrap">🔑 API Key</button>
 </div>
 
-<!-- ══════════════ AI COACH TAB ══════════════ -->
 <div id="panel-coach" class="panel" style="display:flex;flex-direction:column;padding-bottom:0">
   <div class="inner" style="flex:1;overflow-y:auto;padding-bottom:8px">
-    <!-- Chips -->
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
-      <button class="chip" onclick="sendChat('Write me a viral LinkedIn post')">✍️ Write viral post</button>
-      <button class="chip" onclick="sendChat('Give me 3 scroll-stopping hooks for LinkedIn')">🎣 Strong hooks</button>
+      <button class="chip" onclick="sendChat('Write me a viral LinkedIn post about my topic')">✍️ Write viral post</button>
+      <button class="chip" onclick="sendChat('Give me 5 strong hooks for LinkedIn about my niche')">🎣 Strong hooks</button>
+      <button class="chip" onclick="sendChat('Give me 10 LinkedIn content ideas for my niche')">💡 Content ideas</button>
       <button class="chip" onclick="sendChat('Give me a LinkedIn content strategy for personal branding')">📈 Content strategy</button>
-      <button class="chip" onclick="sendChat('What are the best times to post on LinkedIn in 2025?')">⏰ Best posting times</button>
       <button class="chip chip-red" onclick="clearChat()" style="margin-left:auto">🗑️ Clear Chat</button>
     </div>
-    <!-- Messages -->
     <div id="chat-messages"></div>
     <div id="typing" style="display:none" class="msg">
       <div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
     <div id="chat-end"></div>
   </div>
-  <!-- Input -->
+
   <div id="chat-input-area">
     <div class="chat-box">
       <textarea id="chat-input" rows="1" placeholder="Ask your LinkedIn coach anything... (Enter to send)"
@@ -311,21 +289,44 @@
   </div>
 </div>
 
-<!-- ══════════════ POST STUDIO TAB ══════════════ -->
 <div id="panel-studio" class="panel" style="display:none">
   <div class="inner-lg">
-    <!-- AI Write Bar -->
     <div class="card card-blue" style="margin-bottom:16px">
       <span class="lbl">⚡ AI Write — Enter a topic and let AI draft your post</span>
-      <div style="display:flex;gap:9px">
-        <input class="inp" id="ai-topic" placeholder='e.g. "How I got 10 clients without cold DMs"'
-          onkeydown="if(event.key==='Enter')aiWritePost()"/>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <input class="inp" id="ai-topic" placeholder='e.g. "How I learned AI tools faster as a beginner"' onkeydown="if(event.key==='Enter')aiWritePost()"/>
         <button class="btn btn-gold" onclick="aiWritePost()" id="ai-write-btn" style="white-space:nowrap">✨ Write Post</button>
+      </div>
+
+      <div class="mini-grid">
+        <div>
+          <span class="lbl" style="margin-top:12px">🎭 Tone</span>
+          <select class="sel" id="tone-select">
+            <option value="professional">Professional</option>
+            <option value="friendly">Friendly</option>
+            <option value="bold">Bold</option>
+            <option value="motivational">Motivational</option>
+            <option value="storytelling">Storytelling</option>
+          </select>
+        </div>
+        <div>
+          <span class="lbl" style="margin-top:12px">📏 Length</span>
+          <select class="sel" id="length-select">
+            <option value="short">Short</option>
+            <option value="medium" selected>Medium</option>
+            <option value="long">Long</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="generateHooks()" id="hooks-btn">🎣 5 Hooks</button>
+        <button class="btn btn-ghost" onclick="generateCTA()" id="cta-btn">📢 Add CTA</button>
+        <button class="btn btn-ghost" onclick="generateIdeas()" id="ideas-btn">💡 10 Ideas</button>
       </div>
     </div>
 
     <div class="studio-grid">
-      <!-- LEFT: Editor -->
       <div>
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -333,8 +334,11 @@
             <span class="char-count" id="char-count" style="color:var(--green)">0/3000</span>
           </div>
           <textarea class="textarea-post" id="post-editor"
-            placeholder="Start typing your post here, or use AI Write above...&#10;&#10;Tip: Start with a hook that stops the scroll!"
+            placeholder="Start typing your post here, or use AI Write above...
+
+Tip: Start with a hook that stops the scroll!"
             oninput="onPostInput()"></textarea>
+
           <div class="btn-row">
             <button class="btn btn-primary" onclick="copyPost()" id="copy-btn">📋 Copy Post</button>
             <button class="btn btn-ghost" onclick="getHashtags()" id="hash-btn"># Get Hashtags</button>
@@ -342,15 +346,30 @@
             <button class="btn btn-ghost" onclick="addHashtagsToPost()" id="add-hash-btn" style="font-size:11px">+ Add Hashtags</button>
             <button class="btn btn-danger" onclick="clearStudio()">🗑️ Clear All</button>
           </div>
+
+          <div class="btn-row">
+            <button class="btn btn-ghost" onclick="rewritePost('shorter')" id="rw1">✂️ Shorter</button>
+            <button class="btn btn-ghost" onclick="rewritePost('stronger')" id="rw2">💥 Stronger</button>
+            <button class="btn btn-ghost" onclick="rewritePost('simpler')" id="rw3">🧠 Simpler</button>
+            <button class="btn btn-ghost" onclick="rewritePost('professional')" id="rw4">💼 Professional</button>
+          </div>
         </div>
 
-        <!-- Hashtags -->
+        <div class="card" id="hooks-box" style="display:none">
+          <span class="lbl">🎣 AI Hook Suggestions</span>
+          <div id="hooks-list" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+
+        <div class="card" id="ideas-box" style="display:none">
+          <span class="lbl">💡 Content Ideas</span>
+          <div id="ideas-list" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+
         <div class="card" id="hashtag-box" style="display:none">
           <span class="lbl"># AI Suggested Hashtags <span style="opacity:0.5;text-transform:none;font-size:10px">(click to add one)</span></span>
           <div id="hashtag-list" style="display:flex;flex-wrap:wrap;gap:7px"></div>
         </div>
 
-        <!-- Score -->
         <div class="card" id="score-box" style="display:none">
           <span class="lbl">📊 Post Score Analysis</span>
           <div class="score-row">
@@ -361,7 +380,6 @@
         </div>
       </div>
 
-      <!-- RIGHT: Preview -->
       <div>
         <span class="lbl">👁️ Live LinkedIn Preview</span>
         <div id="li-preview">
@@ -388,24 +406,22 @@
             <div class="li-action">📤 Send</div>
           </div>
         </div>
-        <div class="info-box">📌 This is exactly how your post will look on LinkedIn. Copy → paste → post!</div>
+        <div class="info-box">📌 This preview updates live. Copy → paste → post on LinkedIn.</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ IMAGE GENERATOR TAB ══════════════ -->
 <div id="panel-image" class="panel" style="display:none">
   <div class="inner">
     <div style="text-align:center;margin-bottom:24px">
       <div style="font-size:32px;margin-bottom:8px">🎨</div>
       <h2 style="font-family:'Playfair Display',serif;color:#70b8e8;margin-bottom:6px">LinkedIn Banner Generator</h2>
-      <p style="opacity:0.45;font-size:12px">AI builds the perfect prompt → Pollinations generates 3 unique banners — completely free</p>
+      <p style="opacity:0.45;font-size:12px">AI builds the prompt → Pollinations generates 3 unique banners</p>
     </div>
     <div class="card">
       <span class="lbl">📝 Your Topic / Niche</span>
-      <input class="inp" id="img-topic" placeholder="e.g. Freelance developer, Sales coach, HR expert, Startup founder..."
-        onkeydown="if(event.key==='Enter')generateImages()"/>
+      <input class="inp" id="img-topic" placeholder="e.g. Data analyst, AI trainer, sales coach, HR expert..." onkeydown="if(event.key==='Enter')generateImages()"/>
     </div>
     <div class="card">
       <span class="lbl">🎨 Choose Style</span>
@@ -415,9 +431,9 @@
       ✨ Generate 3 Banner Variations
     </button>
     <div style="background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:12px;opacity:0.8">
-      ⚠️ <strong>Note:</strong> Images only load on GitHub Pages or when opened directly in a browser. They won't show inside Claude's preview due to security restrictions — but everything works perfectly once deployed!
+      ⚠️ <strong>Note:</strong> Images load best on GitHub Pages or in a browser tab.
     </div>
-    <div id="img-loading" style="display:none;margin-top:18px;display:flex;flex-direction:column;gap:10px">
+    <div id="img-loading" style="display:none;margin-top:18px;flex-direction:column;gap:10px">
       <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite">Generating variation 1...</div>
       <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite;animation-delay:0.3s">Generating variation 2...</div>
       <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite;animation-delay:0.6s">Generating variation 3...</div>
@@ -426,7 +442,6 @@
   </div>
 </div>
 
-<!-- ══════════════ TEMPLATES TAB ══════════════ -->
 <div id="panel-templates" class="panel" style="display:none">
   <div class="inner">
     <div style="text-align:center;margin-bottom:22px">
@@ -446,7 +461,6 @@
   </div>
 </div>
 
-<!-- ── FOOTER ── -->
 <a href="https://www.linkedin.com/in/manugupta79" target="_blank" id="footer">
   <div class="footer-in">in</div>
   <span class="footer-text">Designed by <strong>Manu Gupta</strong></span>
@@ -454,44 +468,50 @@
 </a>
 
 <script>
-// ─── CONFIG ──────────────────────────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are an elite LinkedIn growth coach. You have analyzed 987+ posts and 23.6M impressions. Always respond in English. Be concise, direct, and actionable. When writing posts: never start with "I", use short paragraphs (1-3 lines), use → for bullets, end with a CTA. Provide the complete post plus 2-3 improvement tips.`;
-const HASH_SYSTEM   = `You are a LinkedIn hashtag expert. Given a post, return ONLY a JSON array of 5-7 relevant hashtags with # symbol. No explanation. Example: ["#LinkedIn","#Growth"]`;
-const SCORE_SYSTEM  = `You are a LinkedIn content analyst. Analyze the post and return ONLY valid JSON with keys: score(1-100), hook(1-10), readability(1-10), engagement(1-10), cta(1-10), tip(string under 15 words). No explanation, just JSON.`;
-const IMG_SYSTEM    = `Generate a SHORT English image prompt (max 12 words) for a professional LinkedIn banner about the given topic. Return ONLY the prompt, nothing else.`;
+const SYSTEM_PROMPT = `You are a LinkedIn growth coach. Always reply in English. Be concise, practical, engaging, and clear. For posts, use a strong hook, short paragraphs, simple language, and end with a CTA.`;
+const HASH_SYSTEM = `You are a LinkedIn hashtag expert. Return ONLY a valid JSON array of 5 to 7 relevant hashtags with # symbol. Example: ["#LinkedIn","#Growth"]`;
+const SCORE_SYSTEM = `You are a LinkedIn content analyst. Analyze the post and return ONLY valid JSON with keys: score(1-100), hook(1-10), readability(1-10), engagement(1-10), cta(1-10), tip(string under 15 words).`;
+const IMG_SYSTEM = `Generate a short English image prompt for a professional LinkedIn banner. Return only the prompt.`;
 
 const TEMPLATES = [
   { name:"Anti-Guru Confession", emoji:"🎭", desc:"Admit what others won't say", color:"#e74c3c" },
-  { name:"Transformation Story", emoji:"🚀", desc:"Before → After narrative",   color:"#2ecc71" },
-  { name:"Contrarian Take",      emoji:"⚡", desc:"Challenge common advice",     color:"#f39c12" },
-  { name:"Behind The Scenes",    emoji:"🎬", desc:"Show your real process",      color:"#9b59b6" },
-  { name:"Lessons Learned",      emoji:"💡", desc:"Number-based insight post",   color:"#3498db" },
-  { name:"Client Win Story",     emoji:"🏆", desc:"Social proof + lesson",       color:"#C9A84C" },
+  { name:"Transformation Story", emoji:"🚀", desc:"Before → After narrative", color:"#2ecc71" },
+  { name:"Contrarian Take", emoji:"⚡", desc:"Challenge common advice", color:"#f39c12" },
+  { name:"Behind The Scenes", emoji:"🎬", desc:"Show your real process", color:"#9b59b6" },
+  { name:"Lessons Learned", emoji:"💡", desc:"Number-based insight post", color:"#3498db" },
+  { name:"Client Win Story", emoji:"🏆", desc:"Social proof + lesson", color:"#C9A84C" },
 ];
 
 const IMG_STYLES = [
   { id:"professional", label:"💼 Professional", extra:"clean corporate office minimal white background" },
-  { id:"tech",         label:"🤖 Tech / AI",    extra:"futuristic technology AI neural network glowing blue" },
-  { id:"nature",       label:"🌿 Calm Nature",  extra:"serene nature zen peaceful minimal soft light" },
-  { id:"bold",         label:"🔥 Bold Dark",    extra:"dramatic dark cinematic studio moody lighting" },
-  { id:"gradient",     label:"🌈 Gradient",     extra:"beautiful colorful gradient abstract modern" },
-  { id:"workspace",    label:"🖥️ Workspace",   extra:"modern desk laptop coffee workspace top view" },
+  { id:"tech", label:"🤖 Tech / AI", extra:"futuristic technology AI neural network glowing blue" },
+  { id:"nature", label:"🌿 Calm Nature", extra:"serene nature zen peaceful minimal soft light" },
+  { id:"bold", label:"🔥 Bold Dark", extra:"dramatic dark cinematic studio moody lighting" },
+  { id:"gradient", label:"🌈 Gradient", extra:"beautiful colorful gradient abstract modern" },
+  { id:"workspace", label:"🖥️ Workspace", extra:"modern desk laptop coffee workspace top view" },
 ];
 
-const TAB_NAMES = { coach:"🤖 AI Coach", studio:"✍️ Post Studio", image:"🎨 Image Generator", templates:"📋 Templates" };
+const TAB_NAMES = {
+  coach:"🤖 AI Coach",
+  studio:"✍️ Post Studio",
+  image:"🎨 Image Generator",
+  templates:"📋 Templates"
+};
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
 let chatHistory = [];
-let hashtags    = [];
-let imgStyle    = "professional";
+let hashtags = [];
+let imgStyle = "professional";
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
 function saveKey() {
   const k = document.getElementById("key-input").value.trim();
-  if (!k || k.length < 10) { alert("Please enter a valid Google Gemini API key (starts with AIza)"); return; }
+  if (!k || !k.startsWith("AIza")) {
+    alert("Please enter a valid Gemini API key.");
+    return;
+  }
   localStorage.setItem("manu_gemini_key", k);
+  chatHistory = [];
   document.getElementById("api-modal").style.display = "none";
-  addBubble("assistant", `<strong>Welcome to Manu's LinkedIn App!</strong> 🚀<br><br>API key saved! You're all set.<br><br>I can help you:<br>→ Write viral, scroll-stopping posts<br>→ Choose the right content template<br>→ Craft hooks that get engagement<br>→ Build your personal brand on LinkedIn<br><br>What's your topic or niche? Let's create something great.`);
+  addBubble("assistant", `<strong>Welcome to Manu's LinkedIn App!</strong> 🚀<br><br>Your Gemini key is saved.<br><br>I can help you with:<br>→ Viral LinkedIn posts<br>→ Hooks and CTAs<br>→ Hashtags and post scoring<br>→ Banner ideas and content planning<br><br>Tell me your niche or topic.`);
 }
 
 function showApiModal() {
@@ -502,12 +522,11 @@ function showApiModal() {
   const savedKey = localStorage.getItem("manu_gemini_key");
   if (savedKey) {
     document.getElementById("api-modal").style.display = "none";
-    addBubble("assistant", `<strong>Welcome back to Manu's LinkedIn App!</strong> 🚀<br><br>Ready to create viral content?<br><br>→ Write posts · Score content · Generate banners<br><br>What's your topic today?`);
+    addBubble("assistant", `<strong>Welcome back!</strong> 🚀<br><br>Ready to create LinkedIn content today?<br><br>Tell me your topic, niche, or goal.`);
   } else {
     document.getElementById("chat-messages").innerHTML = "";
   }
 
-  // Build templates
   const tg = document.getElementById("tmpl-grid");
   TEMPLATES.forEach(t => {
     tg.innerHTML += `<div class="tmpl-card" onclick="useTemplate('${t.name}')">
@@ -519,64 +538,108 @@ function showApiModal() {
     </div>`;
   });
 
-  // Build style grid
   const sg = document.getElementById("style-grid");
   IMG_STYLES.forEach(s => {
     sg.innerHTML += `<div class="style-card${s.id===imgStyle?' active':''}" id="style-${s.id}" onclick="setStyle('${s.id}')">${s.label}</div>`;
   });
 })();
 
-// ─── TAB SWITCH ───────────────────────────────────────────────────────────────
 function switchTab(id) {
   ["coach","studio","image","templates"].forEach(t => {
     document.getElementById("panel-"+t).style.display = "none";
     document.getElementById("tab-"+t).classList.remove("active");
   });
-  document.getElementById("panel-"+id).style.display = id==="coach"?"flex":"block";
+  document.getElementById("panel-"+id).style.display = id==="coach" ? "flex" : "block";
   document.getElementById("tab-"+id).classList.add("active");
   document.getElementById("tab-name").textContent = TAB_NAMES[id];
 }
 
-// ─── API CALL ─────────────────────────────────────────────────────────────────
-async function callClaude(system, messages, maxTokens=1000) {
+async function callGemini(system, messages, maxTokens = 500) {
   const key = localStorage.getItem("manu_gemini_key");
-  if (!key) { showApiModal(); throw new Error("No API key"); }
-  const prompt = system + "\n\n" + messages.map(m => (m.role==="user" ? "User: " : "Assistant: ") + m.content).join("\n");
-  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + key, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }], generationConfig:{ maxOutputTokens: maxTokens } }),
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  if (!key) {
+    showApiModal();
+    throw new Error("NO_API_KEY");
+  }
+
+  const trimmedMessages = messages.slice(-6);
+  const prompt =
+    system + "\n\n" +
+    trimmedMessages.map(m =>
+      `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`
+    ).join("\n");
+
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + key;
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          maxOutputTokens: maxTokens,
+          temperature: 0.7
+        }
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      const lower = msg.toLowerCase();
+
+      if (res.status === 429 || lower.includes("quota") || lower.includes("rate")) {
+        throw new Error("QUOTA_EXCEEDED");
+      }
+      if (res.status === 400 || lower.includes("api key") || lower.includes("credential") || lower.includes("auth")) {
+        throw new Error("INVALID_API_KEY");
+      }
+      throw new Error(msg);
+    }
+
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error("EMPTY_RESPONSE");
+    return text;
+  } catch (err) {
+    if (err.message === "Failed to fetch") throw new Error("NETWORK_ERROR");
+    throw err;
+  }
 }
 
-// ─── CHAT ─────────────────────────────────────────────────────────────────────
 async function sendChat(text) {
   const inp = document.getElementById("chat-input");
   const msg = text || inp.value.trim();
   if (!msg) return;
-  inp.value = ""; inp.style.height = "auto";
+
+  if (chatHistory.length > 12) chatHistory = chatHistory.slice(-12);
+
+  inp.value = "";
+  inp.style.height = "auto";
 
   chatHistory.push({ role:"user", content:msg });
   addBubble("user", escHtml(msg));
   showTyping(true);
 
   try {
-    const reply = await callClaude(SYSTEM_PROMPT, chatHistory);
+    const reply = await callGemini(SYSTEM_PROMPT, chatHistory, 500);
     chatHistory.push({ role:"assistant", content:reply });
     showTyping(false);
     addBubble("assistant", fmtText(reply), true);
-  } catch(e) {
+  } catch (e) {
     showTyping(false);
     const msg = e.message || "";
-    if (msg.includes("401") || msg.includes("auth") || msg.includes("invalid") || msg.includes("API key")) {
-      addBubble("assistant", "⚠️ <strong>Invalid API Key!</strong><br>Please click 🔑 API Key button and enter a valid key.<br><small style='opacity:0.6'>Make sure you created a NEW key after the old one was shared.</small>");
-    } else if (msg.includes("Failed to fetch") || msg.includes("NetworkError") || msg.includes("CORS")) {
-      addBubble("assistant", "⚠️ <strong>CORS Error!</strong><br>Your browser is blocking the request.<br><br>✅ Fix: Open the app in <strong>Chrome</strong> or <strong>Edge</strong> browser.<br>Also make sure the URL starts with <strong>https://</strong>");
+
+    if (msg === "INVALID_API_KEY") {
+      addBubble("assistant", "⚠️ <strong>Invalid API Key</strong><br>Please click 🔑 API Key and enter a valid Gemini key.");
+    } else if (msg === "QUOTA_EXCEEDED") {
+      addBubble("assistant", "⚠️ <strong>Quota exceeded</strong><br>Your Gemini free limit is currently full.<br><br>Try again later, use a different project key, or reduce request size.");
+    } else if (msg === "NETWORK_ERROR") {
+      addBubble("assistant", "⚠️ <strong>Network issue</strong><br>Please check internet and open the app in Chrome or Edge.");
+    } else if (msg === "NO_API_KEY") {
+      addBubble("assistant", "⚠️ <strong>No API key found</strong><br>Please enter your Gemini API key.");
     } else {
-      addBubble("assistant", "⚠️ Error: " + (msg || "Unknown error") + "<br><small>Click 🔑 API Key to re-enter your key.</small>");
+      addBubble("assistant", "⚠️ <strong>Error</strong><br>" + escHtml(msg));
     }
   }
   scrollChat();
@@ -585,81 +648,234 @@ async function sendChat(text) {
 function clearChat() {
   chatHistory = [];
   document.getElementById("chat-messages").innerHTML = "";
-  addBubble("assistant", "Chat cleared! Fresh start 🚀<br><br>What topic do you want to post about today?");
+  addBubble("assistant", "Chat cleared! Fresh start 🚀<br><br>What topic do you want to work on today?");
 }
 
 function addBubble(role, html, withActions=false) {
   const wrap = document.createElement("div");
-  wrap.className = "msg fadein" + (role==="user"?" user":"");
-  const raw = chatHistory.length>0 ? chatHistory[chatHistory.length-1]?.content : "";
-  wrap.innerHTML = `<div class="bubble${role==="user"?" user":""}">
-    ${role==="assistant"?`<div class="bubble-tag"><div class="in-dot">in</div> LinkedIn Coach</div>`:""}
+  wrap.className = "msg fadein" + (role==="user" ? " user" : "");
+  wrap.innerHTML = `<div class="bubble${role==="user" ? " user" : ""}">
+    ${role==="assistant" ? `<div class="bubble-tag"><div class="in-dot">in</div> LinkedIn Coach</div>` : ""}
     <div>${html}</div>
-    ${withActions?`<div class="bubble-actions">
+    ${withActions ? `<div class="bubble-actions">
       <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="copyToClipboard(this.parentElement.parentElement.querySelector('div:not(.bubble-tag):not(.bubble-actions)').innerText)">📋 Copy</button>
       <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="openInStudio(this.parentElement.parentElement.querySelector('div:not(.bubble-tag):not(.bubble-actions)').innerText)">✍️ Open in Studio</button>
-    </div>`:""}
+    </div>` : ""}
   </div>`;
   document.getElementById("chat-messages").appendChild(wrap);
   scrollChat();
 }
 
-function showTyping(v) { document.getElementById("typing").style.display = v?"flex":"none"; scrollChat(); }
-function scrollChat() { document.getElementById("chat-end").scrollIntoView({behavior:"smooth"}); }
+function showTyping(v) {
+  document.getElementById("typing").style.display = v ? "flex" : "none";
+  scrollChat();
+}
 
-// ─── STUDIO ───────────────────────────────────────────────────────────────────
+function scrollChat() {
+  document.getElementById("chat-end").scrollIntoView({behavior:"smooth"});
+}
+
 function onPostInput() {
   const txt = document.getElementById("post-editor").value;
   const n = txt.length;
   const cc = document.getElementById("char-count");
-  cc.textContent = n+"/3000";
-  cc.style.color = n>2700?"#e74c3c":n>2000?"#C9A84C":"#2ecc71";
+  cc.textContent = n + "/3000";
+  cc.style.color = n > 2700 ? "#e74c3c" : n > 2000 ? "#C9A84C" : "#2ecc71";
   updatePreview(txt);
 }
 
 function updatePreview(txt) {
   const body = document.getElementById("li-body");
-  if (!txt.trim()) { body.innerHTML = '<span style="color:#aaa;font-family:sans-serif;font-size:13px">Your post will appear here as you type...</span>'; return; }
+  if (!txt.trim()) {
+    body.innerHTML = '<span style="color:#aaa;font-family:sans-serif;font-size:13px">Your post will appear here as you type...</span>';
+    return;
+  }
   const lines = txt.split("\n");
-  const isLong = lines.length>5 || txt.length>300;
+  const isLong = lines.length > 5 || txt.length > 300;
   const shown = isLong ? lines.slice(0,5).join("\n").slice(0,300) : txt;
-  let html = fmtPreview(shown) + (isLong?'<span class="li-more">...more</span>':"");
+  let html = fmtPreview(shown) + (isLong ? '<span class="li-more">...more</span>' : "");
   if (hashtags.length) html += `<div class="li-hashtags">${hashtags.map(h=>`<span class="li-hashtag">${h}</span>`).join(" ")}</div>`;
   body.innerHTML = html;
+}
+
+function getTone() {
+  return document.getElementById("tone-select").value;
+}
+
+function getLength() {
+  return document.getElementById("length-select").value;
 }
 
 async function aiWritePost() {
   const topic = document.getElementById("ai-topic").value.trim();
   if (!topic) return;
+
+  const tone = getTone();
+  const length = getLength();
   const btn = document.getElementById("ai-write-btn");
-  btn.textContent = "✨ Writing..."; btn.disabled = true;
+  btn.textContent = "✨ Writing...";
+  btn.disabled = true;
+
   try {
-    const reply = await callClaude(SYSTEM_PROMPT, [{role:"user",content:`Write a complete LinkedIn post about: "${topic}". Give me ONLY the post text, no template name, no tips.`}]);
+    const prompt = `Write a LinkedIn post about "${topic}".
+Tone: ${tone}.
+Length: ${length}.
+Return only the final post text.
+Use a strong hook, short paragraphs, and end with a CTA.`;
+
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 500);
+    document.getElementById("post-editor").value = reply.trim();
+    hashtags = [];
+    document.getElementById("hashtag-box").style.display = "none";
+    document.getElementById("score-box").style.display = "none";
+    onPostInput();
+    switchTab("studio");
+  } catch (e) {
+    alert("Could not generate post right now.");
+  }
+
+  btn.textContent = "✨ Write Post";
+  btn.disabled = false;
+}
+
+async function generateHooks() {
+  const topic = document.getElementById("ai-topic").value.trim() || document.getElementById("post-editor").value.trim();
+  if (!topic) return;
+
+  const btn = document.getElementById("hooks-btn");
+  btn.textContent = "⏳ Loading...";
+  btn.disabled = true;
+
+  try {
+    const prompt = `Give me 5 short scroll-stopping LinkedIn hooks about this topic: ${topic}
+Return each hook on a new line only.`;
+
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 220);
+    const hooks = reply.split("\n").map(x => x.trim()).filter(Boolean);
+
+    document.getElementById("hooks-list").innerHTML = hooks.map(h => `
+      <div class="hash-chip" style="display:block;padding:10px 12px;border-radius:10px" onclick="insertHook(${JSON.stringify(h)})">${escHtml(h)}</div>
+    `).join("");
+
+    document.getElementById("hooks-box").style.display = "block";
+  } catch (e) {
+    alert("Could not generate hooks.");
+  }
+
+  btn.textContent = "🎣 5 Hooks";
+  btn.disabled = false;
+}
+
+function insertHook(hook) {
+  const ed = document.getElementById("post-editor");
+  const rest = ed.value.trim();
+  ed.value = hook + "\n\n" + rest;
+  onPostInput();
+}
+
+async function generateCTA() {
+  const txt = document.getElementById("post-editor").value.trim() || document.getElementById("ai-topic").value.trim();
+  if (!txt) return;
+
+  const btn = document.getElementById("cta-btn");
+  btn.textContent = "⏳ Loading...";
+  btn.disabled = true;
+
+  try {
+    const prompt = `Write 3 short CTA options for this LinkedIn post/topic:
+${txt}
+
+Return each CTA on a new line only.`;
+
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 150);
+    const firstCTA = reply.split("\n").map(x => x.trim()).filter(Boolean)[0] || "";
+    if (firstCTA) {
+      const ed = document.getElementById("post-editor");
+      ed.value = ed.value.trim() + "\n\n" + firstCTA;
+      onPostInput();
+    }
+  } catch (e) {
+    alert("Could not generate CTA.");
+  }
+
+  btn.textContent = "📢 Add CTA";
+  btn.disabled = false;
+}
+
+async function generateIdeas() {
+  const topic = document.getElementById("ai-topic").value.trim() || "LinkedIn personal branding";
+  const btn = document.getElementById("ideas-btn");
+  btn.textContent = "⏳ Loading...";
+  btn.disabled = true;
+
+  try {
+    const prompt = `Give me 10 LinkedIn post ideas about ${topic}.
+Return each idea on a new line only.`;
+
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 260);
+    const ideas = reply.split("\n").map(x => x.trim()).filter(Boolean);
+
+    document.getElementById("ideas-list").innerHTML = ideas.map(i => `
+      <div class="hash-chip" style="display:block;padding:10px 12px;border-radius:10px" onclick="useIdea(${JSON.stringify(i)})">${escHtml(i)}</div>
+    `).join("");
+
+    document.getElementById("ideas-box").style.display = "block";
+  } catch (e) {
+    alert("Could not generate ideas.");
+  }
+
+  btn.textContent = "💡 10 Ideas";
+  btn.disabled = false;
+}
+
+function useIdea(idea) {
+  document.getElementById("ai-topic").value = idea.replace(/^\d+[\).\-\s]*/, "");
+  switchTab("studio");
+}
+
+async function rewritePost(mode) {
+  const txt = document.getElementById("post-editor").value.trim();
+  if (!txt) return;
+
+  const map = {
+    shorter: "Make this LinkedIn post shorter but keep it strong.",
+    stronger: "Rewrite this LinkedIn post to sound stronger and more engaging.",
+    simpler: "Rewrite this LinkedIn post in simpler English.",
+    professional: "Rewrite this LinkedIn post in a more professional tone."
+  };
+
+  try {
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:`${map[mode]}\n\nPost:\n${txt}`}], 450);
     document.getElementById("post-editor").value = reply.trim();
     onPostInput();
-    document.getElementById("score-box").style.display = "none";
-    document.getElementById("hashtag-box").style.display = "none";
-    hashtags = [];
-  } catch {}
-  btn.textContent = "✨ Write Post"; btn.disabled = false;
+  } catch (e) {
+    alert("Could not rewrite post.");
+  }
 }
 
 async function getHashtags() {
   const txt = document.getElementById("post-editor").value.trim();
   if (!txt) return;
+
   const btn = document.getElementById("hash-btn");
-  btn.textContent = "⏳ Loading..."; btn.disabled = true;
+  btn.textContent = "⏳ Loading...";
+  btn.disabled = true;
+
   try {
-    const raw = await callClaude(HASH_SYSTEM, [{role:"user",content:txt}], 200);
+    const raw = await callGemini(HASH_SYSTEM, [{role:"user", content:txt}], 150);
     const arr = JSON.parse(raw.replace(/```json|```/g,"").trim());
     hashtags = Array.isArray(arr) ? arr : ["#LinkedIn","#PersonalBrand","#Growth"];
-    const box = document.getElementById("hashtag-box");
-    const list = document.getElementById("hashtag-list");
-    list.innerHTML = hashtags.map(h=>`<span class="hash-chip" onclick="appendHashtag('${h}')">${h}</span>`).join("");
-    box.style.display = "block";
+    document.getElementById("hashtag-list").innerHTML = hashtags.map(h => `<span class="hash-chip" onclick="appendHashtag('${h}')">${h}</span>`).join("");
+    document.getElementById("hashtag-box").style.display = "block";
     updatePreview(document.getElementById("post-editor").value);
-  } catch { hashtags = ["#LinkedIn","#PersonalBrand","#Growth"]; }
-  btn.textContent = "# Get Hashtags"; btn.disabled = false;
+  } catch (e) {
+    hashtags = ["#LinkedIn","#PersonalBrand","#Growth"];
+    document.getElementById("hashtag-list").innerHTML = hashtags.map(h => `<span class="hash-chip" onclick="appendHashtag('${h}')">${h}</span>`).join("");
+    document.getElementById("hashtag-box").style.display = "block";
+  }
+
+  btn.textContent = "# Get Hashtags";
+  btn.disabled = false;
 }
 
 function appendHashtag(h) {
@@ -678,21 +894,34 @@ function addHashtagsToPost() {
 async function scorePost() {
   const txt = document.getElementById("post-editor").value.trim();
   if (!txt) return;
+
   const btn = document.getElementById("score-btn");
-  btn.textContent = "⏳ Scoring..."; btn.disabled = true;
+  btn.textContent = "⏳ Scoring...";
+  btn.disabled = true;
+
   try {
-    const raw = await callClaude(SCORE_SYSTEM, [{role:"user",content:txt}], 300);
+    const raw = await callGemini(SCORE_SYSTEM, [{role:"user", content:txt}], 220);
     const s = JSON.parse(raw.replace(/```json|```/g,"").trim());
+
     drawScoreRing(s.score);
     document.getElementById("score-tip-text").textContent = "💡 " + s.tip;
-    const bars = document.getElementById("score-bars");
-    bars.innerHTML = [["🎣 Hook",s.hook],["📖 Readability",s.readability],["💬 Engagement",s.engagement],["📢 CTA",s.cta]].map(([l,v])=>{
-      const col = v>=7?"#2ecc71":v>=5?"#C9A84C":"#e74c3c";
+    document.getElementById("score-bars").innerHTML = [
+      ["🎣 Hook", s.hook],
+      ["📖 Readability", s.readability],
+      ["💬 Engagement", s.engagement],
+      ["📢 CTA", s.cta]
+    ].map(([l,v]) => {
+      const col = v>=7 ? "#2ecc71" : v>=5 ? "#C9A84C" : "#e74c3c";
       return `<div class="score-bar-card"><div class="score-bar-label">${l}</div><div class="score-bar-row"><div class="bar-track"><div class="bar-fill" style="width:${v*10}%;background:${col}"></div></div><span class="score-val" style="color:${col}">${v}/10</span></div></div>`;
     }).join("");
+
     document.getElementById("score-box").style.display = "block";
-  } catch {}
-  btn.textContent = "📊 Score Post"; btn.disabled = false;
+  } catch (e) {
+    alert("Could not score post.");
+  }
+
+  btn.textContent = "📊 Score Post";
+  btn.disabled = false;
 }
 
 function drawScoreRing(score) {
@@ -700,20 +929,34 @@ function drawScoreRing(score) {
   const ctx = c.getContext("2d");
   const r = 33, cx = 40, cy = 40, sw = 7;
   ctx.clearRect(0,0,80,80);
-  ctx.beginPath(); ctx.arc(cx,cy,r,-Math.PI/2,Math.PI*1.5);
-  ctx.strokeStyle="rgba(255,255,255,0.08)"; ctx.lineWidth=sw; ctx.stroke();
-  const col = score>=75?"#2ecc71":score>=50?"#C9A84C":"#e74c3c";
-  ctx.beginPath(); ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+((score/100)*Math.PI*2));
-  ctx.strokeStyle=col; ctx.lineWidth=sw; ctx.lineCap="round"; ctx.stroke();
-  ctx.fillStyle=col; ctx.font="bold 16px 'Playfair Display',serif";
-  ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(score,cx,cy);
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, -Math.PI/2, Math.PI*1.5);
+  ctx.strokeStyle = "rgba(255,255,255,0.08)";
+  ctx.lineWidth = sw;
+  ctx.stroke();
+
+  const col = score>=75 ? "#2ecc71" : score>=50 ? "#C9A84C" : "#e74c3c";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + ((score/100)*Math.PI*2));
+  ctx.strokeStyle = col;
+  ctx.lineWidth = sw;
+  ctx.lineCap = "round";
+  ctx.stroke();
+
+  ctx.fillStyle = col;
+  ctx.font = "bold 16px 'Playfair Display', serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(score, cx, cy);
 }
 
 function copyPost() {
-  const txt = document.getElementById("post-editor").value + (hashtags.length?"\n\n"+hashtags.join(" "):"");
+  const txt = document.getElementById("post-editor").value + (hashtags.length ? "\n\n" + hashtags.join(" ") : "");
   navigator.clipboard.writeText(txt);
   const btn = document.getElementById("copy-btn");
-  btn.textContent = "✅ Copied!"; setTimeout(()=>btn.textContent="📋 Copy Post",2000);
+  btn.textContent = "✅ Copied!";
+  setTimeout(() => btn.textContent = "📋 Copy Post", 2000);
 }
 
 function clearStudio() {
@@ -722,6 +965,8 @@ function clearStudio() {
   hashtags = [];
   document.getElementById("hashtag-box").style.display = "none";
   document.getElementById("score-box").style.display = "none";
+  document.getElementById("hooks-box").style.display = "none";
+  document.getElementById("ideas-box").style.display = "none";
   onPostInput();
 }
 
@@ -731,28 +976,32 @@ function openInStudio(text) {
   switchTab("studio");
 }
 
-// ─── IMAGE GEN ────────────────────────────────────────────────────────────────
 function setStyle(id) {
   imgStyle = id;
   IMG_STYLES.forEach(s => {
-    document.getElementById("style-"+s.id).className = "style-card" + (s.id===id?" active":"");
+    document.getElementById("style-"+s.id).className = "style-card" + (s.id===id ? " active" : "");
   });
 }
 
 async function generateImages() {
   const topic = document.getElementById("img-topic").value.trim();
   if (!topic) return;
+
   const btn = document.getElementById("gen-btn");
-  btn.textContent = "⏳ Generating your banners..."; btn.disabled = true;
+  btn.textContent = "⏳ Generating your banners...";
+  btn.disabled = true;
   document.getElementById("img-loading").style.display = "flex";
   document.getElementById("img-results").innerHTML = "";
+
   try {
-    const aiPrompt = await callClaude(IMG_SYSTEM, [{role:"user",content:"Topic: "+topic}], 60);
-    const extra = IMG_STYLES.find(s=>s.id===imgStyle)?.extra||"";
+    const aiPrompt = await callGemini(IMG_SYSTEM, [{role:"user", content:"Topic: " + topic}], 60);
+    const extra = IMG_STYLES.find(s => s.id===imgStyle)?.extra || "";
     const final = `${aiPrompt.trim()}, ${extra}, LinkedIn banner, no text, ultra HD`;
+
     document.getElementById("img-loading").style.display = "none";
     const res = document.getElementById("img-results");
-    [~~(Math.random()*99999),~~(Math.random()*99999),~~(Math.random()*99999)].forEach((seed,i)=>{
+
+    [~~(Math.random()*99999),~~(Math.random()*99999),~~(Math.random()*99999)].forEach((seed,i) => {
       const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(final)}?width=1200&height=628&seed=${seed}&nologo=true&enhance=true`;
       res.innerHTML += `<div class="img-card fadein">
         <div style="position:relative;min-height:120px;background:rgba(255,255,255,0.03)">
@@ -765,26 +1014,32 @@ async function generateImages() {
         </div>
       </div>`;
     });
-    res.innerHTML += `<div class="tip-box">💡 <strong>Tip:</strong> Download your favourite banner and use it as a LinkedIn post image. Generate again for new variations!</div>`;
-  } catch(e) {
+
+    res.innerHTML += `<div class="tip-box">💡 <strong>Tip:</strong> Download your favorite banner and use it as a LinkedIn banner or post creative.</div>`;
+  } catch (e) {
     document.getElementById("img-loading").style.display = "none";
     document.getElementById("img-results").innerHTML = `<div style="color:var(--red);font-size:13px">⚠️ Error generating images. Please try again.</div>`;
   }
-  btn.textContent = "✨ Generate 3 Banner Variations"; btn.disabled = false;
+
+  btn.textContent = "✨ Generate 3 Banner Variations";
+  btn.disabled = false;
 }
 
-// ─── TEMPLATES ────────────────────────────────────────────────────────────────
 function useTemplate(name) {
   switchTab("coach");
-  setTimeout(()=>sendChat(`Write a LinkedIn post using the ${name} template. First ask me for my topic.`),100);
+  setTimeout(() => sendChat(`Write a LinkedIn post using the ${name} template. First ask me for my topic.`), 100);
 }
 
-// ─── UTILS ────────────────────────────────────────────────────────────────────
 function copyToClipboard(txt) {
   navigator.clipboard.writeText(txt);
 }
 
-function escHtml(t) { return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escHtml(t) {
+  return String(t)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+}
 
 function fmtText(t) {
   return escHtml(t)
