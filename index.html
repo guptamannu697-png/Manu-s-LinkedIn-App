@@ -1,822 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Manu's LinkedIn App</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<style>
-  :root {
-    --lb: #0077B5;
-    --lb2: #004182;
-    --gold: #C9A84C;
-    --bg: #07090f;
-    --bg2: rgba(255,255,255,0.045);
-    --bg3: rgba(255,255,255,0.08);
-    --border: rgba(255,255,255,0.08);
-    --text: #e8eaf0;
-    --muted: rgba(232,234,240,0.45);
-    --green: #2ecc71;
-    --red: #e74c3c;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  ::-webkit-scrollbar { width: 3px; }
-  ::-webkit-scrollbar-thumb { background: rgba(0,119,181,0.35); border-radius: 3px; }
-  input::placeholder, textarea::placeholder { color: rgba(232,234,240,0.25); }
-  input:focus, textarea:focus, select:focus { outline: none; border-color: rgba(0,119,181,0.5) !important; }
-  a { text-decoration: none; }
-
-  #header {
-    background: linear-gradient(100deg, var(--lb2), var(--lb));
-    padding: 13px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 4px 28px rgba(0,119,181,0.4);
-    flex-wrap: wrap;
-    row-gap: 8px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .logo-box {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 19px;
-    font-weight: 900;
-    color: var(--lb);
-    flex-shrink: 0;
-    font-family: 'Playfair Display', serif;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  }
-
-  .header-title { font-size: 16px; font-weight: 700; font-family: 'Playfair Display', serif; }
-  .header-sub { font-size: 10px; opacity: 0.7; }
-
-  .nav {
-    display: flex;
-    gap: 4px;
-    background: rgba(0,0,0,0.25);
-    border-radius: 10px;
-    padding: 4px;
-  }
-
-  .nav-btn {
-    padding: 7px 13px;
-    border-radius: 7px;
-    border: none;
-    background: transparent;
-    color: white;
-    cursor: pointer;
-    font-size: 11px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-    transition: all 0.2s;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .nav-btn.active { background: rgba(255,255,255,0.18); font-weight: 700; }
-  .nav-btn:hover { background: rgba(255,255,255,0.1); }
-  .tab-label { font-size: 11px; opacity: 0.65; white-space: nowrap; }
-
-  .panel { flex: 1; overflow-y: auto; padding: 20px 16px; }
-  .inner { max-width: 760px; margin: 0 auto; }
-  .inner-lg { max-width: 1100px; margin: 0 auto; }
-
-  .card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 14px;
-  }
-
-  .card-blue { background: rgba(0,119,181,0.07); border-color: rgba(0,119,181,0.2); }
-
-  .lbl {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    display: block;
-    font-weight: 600;
-  }
-
-  .btn {
-    padding: 10px 20px;
-    border-radius: 9px;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700;
-    transition: all 0.2s;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--lb2), var(--lb));
-    color: #fff;
-    box-shadow: 0 3px 12px rgba(0,119,181,0.35);
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 5px 18px rgba(0,119,181,0.5);
-    transform: translateY(-1px);
-  }
-
-  .btn-gold {
-    background: linear-gradient(135deg, #a07820, var(--gold));
-    color: #fff;
-    box-shadow: 0 3px 12px rgba(201,168,76,0.35);
-  }
-
-  .btn-gold:hover {
-    box-shadow: 0 5px 18px rgba(201,168,76,0.5);
-    transform: translateY(-1px);
-  }
-
-  .btn-ghost {
-    background: var(--bg3);
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-
-  .btn-ghost:hover { background: rgba(255,255,255,0.12); }
-
-  .btn-danger {
-    background: rgba(231,76,60,0.1);
-    color: var(--red);
-    border: 1px solid rgba(231,76,60,0.25);
-  }
-
-  .btn-danger:hover { background: rgba(231,76,60,0.18); }
-
-  .btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none !important;
-  }
-
-  .inp, .sel {
-    width: 100%;
-    padding: 11px 14px;
-    border-radius: 10px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
-    transition: border 0.2s;
-  }
-
-  .sel option { background: #10141d; color: #fff; }
-
-  .textarea-post {
-    width: 100%;
-    min-height: 220px;
-    resize: vertical;
-    padding: 13px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-size: 13.5px;
-    font-family: 'Playfair Display', serif;
-    line-height: 1.7;
-    border-radius: 10px;
-    transition: border 0.2s;
-  }
-
-  .chip {
-    background: rgba(0,119,181,0.1);
-    border: 1px solid rgba(0,119,181,0.25);
-    border-radius: 18px;
-    padding: 5px 13px;
-    color: #70b8e8;
-    cursor: pointer;
-    font-size: 11px;
-    font-family: 'DM Sans', sans-serif;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-
-  .chip:hover { background: rgba(0,119,181,0.2); }
-
-  .chip-red {
-    background: rgba(231,76,60,0.1);
-    border-color: rgba(231,76,60,0.25);
-    color: var(--red);
-  }
-
-  .chip-red:hover { background: rgba(231,76,60,0.2); }
-
-  .hash-chip {
-    background: rgba(0,119,181,0.15);
-    border: 1px solid rgba(0,119,181,0.3);
-    border-radius: 16px;
-    padding: 4px 12px;
-    font-size: 12px;
-    color: #70b8e8;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .hash-chip:hover { background: rgba(0,119,181,0.28); }
-
-  #chat-messages {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-bottom: 8px;
-  }
-
-  .msg { display: flex; }
-  .msg.user { justify-content: flex-end; }
-
-  .bubble {
-    max-width: 82%;
-    padding: 13px 16px;
-    font-size: 13.5px;
-    line-height: 1.7;
-    border-radius: 18px 18px 18px 4px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-  }
-
-  .bubble.user {
-    border-radius: 18px 18px 4px 18px;
-    background: linear-gradient(135deg, var(--lb2), var(--lb));
-    border: none;
-    box-shadow: 0 4px 16px rgba(0,119,181,0.3);
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .bubble-tag {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-bottom: 7px;
-    opacity: 0.4;
-    font-size: 10px;
-  }
-
-  .bubble-tag .in-dot {
-    width: 13px;
-    height: 13px;
-    background: var(--lb);
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 7px;
-    color: #fff;
-    font-weight: 900;
-  }
-
-  .bubble-actions { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
-
-  .typing {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    padding: 14px 18px;
-    background: var(--bg2);
-    border-radius: 18px;
-    border: 1px solid var(--border);
-  }
-
-  .dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--lb);
-    animation: bounce 1.2s infinite;
-  }
-
-  .dot:nth-child(2) { animation-delay: 0.2s; }
-  .dot:nth-child(3) { animation-delay: 0.4s; }
-
-  #chat-input-area {
-    padding: 10px 16px 14px;
-    max-width: 760px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .chat-box {
-    display: flex;
-    gap: 9px;
-    align-items: flex-end;
-    background: rgba(255,255,255,0.055);
-    border-radius: 15px;
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 9px 9px 9px 14px;
-    box-shadow: 0 0 20px rgba(0,119,181,0.08);
-  }
-
-  #chat-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-size: 13.5px;
-    resize: none;
-    font-family: 'DM Sans', sans-serif;
-    line-height: 1.5;
-    max-height: 95px;
-    overflow-y: auto;
-  }
-
-  .studio-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    align-items: start;
-  }
-
-  @media (max-width: 700px) {
-    .studio-grid { grid-template-columns: 1fr; }
-  }
-
-  .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-  .char-count { font-size: 11px; font-weight: 700; font-family: 'DM Sans', sans-serif; }
-
-  .mini-grid {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-top:12px;
-  }
-
-  @media (max-width: 520px) {
-    .mini-grid { grid-template-columns:1fr; }
-  }
-
-  .score-row { display: flex; align-items: center; gap: 18px; margin-bottom: 14px; }
-  .score-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .score-bar-card { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 9px 12px; }
-  .score-bar-label { font-size: 11px; opacity: 0.5; margin-bottom: 4px; }
-  .score-bar-row { display: flex; align-items: center; gap: 7px; }
-  .bar-track { flex: 1; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.1); overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-  .score-val { font-size: 12px; font-weight: 700; }
-
-  #li-preview {
-    background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.22);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: #000;
-  }
-
-  .li-header { padding: 14px 16px 0; display: flex; align-items: center; gap: 10px; }
-  .li-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--lb), var(--lb2)); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; }
-  .li-name { font-weight: 700; font-size: 14px; line-height: 1.2; }
-  .li-sub { font-size: 11px; color: #666; }
-  .li-time { font-size: 11px; color: #888; }
-  .li-body { padding: 10px 16px; font-size: 14px; line-height: 1.6; color: #000; word-break: break-word; }
-  .li-more { color: var(--lb); cursor: pointer; font-weight: 600; font-size: 13px; }
-  .li-hashtags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 3px; }
-  .li-hashtag { color: var(--lb); font-size: 13px; font-weight: 500; }
-  .li-reactions { padding: 4px 16px; border-bottom: 1px solid #e8e8e8; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; }
-  .li-actions { padding: 2px 8px; display: flex; justify-content: space-around; }
-  .li-action { display: flex; align-items: center; gap: 5px; padding: 10px 12px; border-radius: 6px; cursor: pointer; color: #666; font-size: 13px; font-weight: 600; }
-  .li-action:hover { background: #f3f3f3; }
-
-  .style-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
-  .style-card {
-    padding: 10px 7px;
-    border-radius: 9px;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.03);
-    font-size: 12px;
-    font-family: 'DM Sans', sans-serif;
-    transition: all 0.15s;
-  }
-
-  .style-card.active {
-    border-color: var(--lb);
-    background: rgba(0,119,181,0.18);
-    color: #70b8e8;
-    font-weight: 700;
-  }
-
-  .img-card {
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
-    margin-bottom: 14px;
-  }
-
-  .img-placeholder { height: 140px; background: var(--bg2); display: flex; align-items: center; justify-content: center; font-size: 12px; opacity: 0.25; }
-  .img-footer { background: rgba(255,255,255,0.03); padding: 10px 13px; display: flex; justify-content: flex-end; }
-
-  .tmpl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  @media (max-width: 500px) {
-    .tmpl-grid { grid-template-columns: 1fr; }
-  }
-
-  .tmpl-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 13px;
-    padding: 16px 16px 16px 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-  }
-
-  .tmpl-card:hover {
-    background: rgba(0,119,181,0.13);
-    border-color: var(--lb);
-    transform: translateY(-2px);
-  }
-
-  .tmpl-stripe { position: absolute; top: 0; left: 0; width: 3px; height: 100%; border-radius: 2px 0 0 2px; }
-  .tmpl-emoji { font-size: 24px; margin-bottom: 6px; }
-  .tmpl-name { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
-  .tmpl-desc { font-size: 11px; opacity: 0.45; }
-  .tmpl-badge { position: absolute; top: 10px; right: 10px; color: #fff; font-size: 9px; padding: 2px 8px; border-radius: 8px; font-weight: 700; }
-
-  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; text-align: center; }
-  .stat-val { font-size: 22px; font-weight: 700; color: var(--lb); font-family: 'Playfair Display', serif; }
-  .stat-lbl { font-size: 10px; opacity: 0.45; margin-top: 2px; }
-
-  #footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: rgba(255,255,255,0.025);
-    border-top: 1px solid rgba(255,255,255,0.05);
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  #footer:hover { background: rgba(0,119,181,0.1); }
-
-  .footer-in {
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;
-    background: var(--lb);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 900;
-    color: #fff;
-  }
-
-  .footer-text { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.3px; }
-  .footer-text strong { color: #70b8e8; }
-
-  .tip-box { background: rgba(255,200,0,0.07); border: 1px solid rgba(255,200,0,0.18); border-radius: 10px; padding: 10px 14px; font-size: 12px; opacity: 0.8; margin-top: 14px; }
-  .info-box { background: rgba(0,119,181,0.06); border: 1px solid rgba(0,119,181,0.15); border-radius: 10px; padding: 10px 14px; font-size: 11px; opacity: 0.7; margin-top: 10px; }
-  .score-tip { background: rgba(255,200,0,0.08); border: 1px solid rgba(255,200,0,0.18); border-radius: 8px; padding: 7px 10px; font-size: 12px; line-height: 1.5; flex: 1; }
-
-  @keyframes bounce {
-    0%,60%,100% { transform:translateY(0); }
-    30% { transform:translateY(-6px); }
-  }
-
-  @keyframes pulse {
-    0%,100% { opacity:0.3; }
-    50% { opacity:0.6; }
-  }
-
-  @keyframes fadein {
-    from { opacity:0; transform:translateY(8px); }
-    to { opacity:1; transform:translateY(0); }
-  }
-
-  .fadein { animation: fadein 0.3s ease forwards; }
-
-  #api-modal {
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.88);
-    z-index:9999;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-  }
-
-  .modal-box {
-    background:#0d1117;
-    border:1px solid rgba(0,119,181,0.4);
-    border-radius:18px;
-    padding:32px 28px;
-    max-width:480px;
-    width:100%;
-    box-shadow:0 20px 60px rgba(0,0,0,0.6);
-  }
-
-  #key-input {
-    width:100%;
-    padding:12px 14px;
-    border-radius:10px;
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.12);
-    color:#e8eaf0;
-    font-size:13px;
-    font-family:'DM Sans',sans-serif;
-    outline:none;
-    box-sizing:border-box;
-    letter-spacing:0.5px;
-    margin:10px 0 6px;
-  }
-
-  #key-input:focus { border-color:rgba(0,119,181,0.5); }
-</style>
-</head>
-<body>
-
-<div id="api-modal">
-  <div class="modal-box">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-      <div style="width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#0077B5;flex-shrink:0;font-family:'Playfair Display',serif">in</div>
-      <div>
-        <div style="font-size:16px;font-weight:700;font-family:'Playfair Display',serif">Manu's LinkedIn App</div>
-        <div style="font-size:10px;opacity:0.6">Enter your Google Gemini API Key</div>
-      </div>
-    </div>
-    <div style="font-size:13px;opacity:0.7;margin-bottom:6px;font-family:'DM Sans',sans-serif">🔑 Google Gemini API Key</div>
-    <input id="key-input" type="password" placeholder="AIza..." onkeydown="if(event.key==='Enter')saveKey()"/>
-    <div style="font-size:11px;opacity:0.45;font-family:'DM Sans',sans-serif;margin-bottom:18px">Your key stays in your browser and is used only for Gemini requests.</div>
-    <button class="btn btn-primary" onclick="saveKey()" style="width:100%;padding:13px;font-size:14px">🚀 Start Using the App</button>
-    <div style="margin-top:16px;padding:12px 14px;background:rgba(0,119,181,0.07);border:1px solid rgba(0,119,181,0.2);border-radius:10px;font-size:11px;font-family:'DM Sans',sans-serif;line-height:1.7;opacity:0.8">
-      <strong>How to get a Gemini API Key:</strong><br>
-      1. Go to <strong>aistudio.google.com</strong><br>
-      2. Login with your Google account<br>
-      3. Click <strong>Get API Key</strong> → Create → Copy
-    </div>
-  </div>
-</div>
-
-<div id="header">
-  <div class="logo-box">in</div>
-  <div style="flex:1;min-width:0">
-    <div class="header-title">Manu's LinkedIn App</div>
-    <div class="header-sub">AI Coach · Post Studio · Image Generator · Templates<br><span style="font-size:9px;opacity:0.5">Powered by Google Gemini</span></div>
-  </div>
-  <div class="nav">
-    <button class="nav-btn active" onclick="switchTab('coach')" id="tab-coach">🤖</button>
-    <button class="nav-btn" onclick="switchTab('studio')" id="tab-studio">✍️</button>
-    <button class="nav-btn" onclick="switchTab('image')" id="tab-image">🎨</button>
-    <button class="nav-btn" onclick="switchTab('templates')" id="tab-templates">📋</button>
-  </div>
-  <div class="tab-label" id="tab-name">🤖 AI Coach</div>
-  <button onclick="showApiModal()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:5px 10px;color:white;cursor:pointer;font-size:10px;font-family:'DM Sans',sans-serif;white-space:nowrap">🔑 API Key</button>
-</div>
-
-<div id="panel-coach" class="panel" style="display:flex;flex-direction:column;padding-bottom:0">
-  <div class="inner" style="flex:1;overflow-y:auto;padding-bottom:8px">
-    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
-      <button class="chip" onclick="sendChat('Write me a viral LinkedIn post about my topic')">✍️ Write viral post</button>
-      <button class="chip" onclick="sendChat('Give me 5 strong hooks for LinkedIn about my niche')">🎣 Strong hooks</button>
-      <button class="chip" onclick="sendChat('Give me 10 LinkedIn content ideas for my niche')">💡 Content ideas</button>
-      <button class="chip" onclick="sendChat('Give me a LinkedIn content strategy for personal branding')">📈 Content strategy</button>
-      <button class="chip chip-red" onclick="clearChat()" style="margin-left:auto">🗑️ Clear Chat</button>
-    </div>
-
-    <div id="chat-messages"></div>
-
-    <div id="typing" style="display:none" class="msg">
-      <div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-    </div>
-
-    <div id="chat-end"></div>
-  </div>
-
-  <div id="chat-input-area">
-    <div class="chat-box">
-      <textarea id="chat-input" rows="1" placeholder="Ask your LinkedIn coach anything... (Enter to send)"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"
-        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,95)+'px'"></textarea>
-      <button class="btn btn-primary" onclick="sendChat()" style="padding:9px 14px;font-size:16px;flex-shrink:0">→</button>
-    </div>
-  </div>
-</div>
-
-<div id="panel-studio" class="panel" style="display:none">
-  <div class="inner-lg">
-    <div class="card card-blue" style="margin-bottom:16px">
-      <span class="lbl">⚡ AI Write — Enter a topic and let AI draft your post</span>
-
-      <div style="display:flex;gap:9px;flex-wrap:wrap">
-        <input class="inp" id="ai-topic" placeholder='e.g. "How I learned AI tools faster as a beginner"' onkeydown="if(event.key==='Enter')aiWritePost()"/>
-        <button class="btn btn-gold" onclick="aiWritePost()" id="ai-write-btn" style="white-space:nowrap">✨ Write Post</button>
-      </div>
-
-      <div class="mini-grid">
-        <div>
-          <span class="lbl" style="margin-top:12px">🎭 Tone</span>
-          <select class="sel" id="tone-select">
-            <option value="professional">Professional</option>
-            <option value="friendly">Friendly</option>
-            <option value="bold">Bold</option>
-            <option value="motivational">Motivational</option>
-            <option value="storytelling">Storytelling</option>
-          </select>
-        </div>
-        <div>
-          <span class="lbl" style="margin-top:12px">📏 Length</span>
-          <select class="sel" id="length-select">
-            <option value="short">Short</option>
-            <option value="medium" selected>Medium</option>
-            <option value="long">Long</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn btn-ghost" onclick="generateHooks()" id="hooks-btn">🎣 5 Hooks</button>
-        <button class="btn btn-ghost" onclick="generateCTA()" id="cta-btn">📢 Add CTA</button>
-        <button class="btn btn-ghost" onclick="generateIdeas()" id="ideas-btn">💡 10 Ideas</button>
-      </div>
-    </div>
-
-    <div class="studio-grid">
-      <div>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-            <span class="lbl">✍️ Your Post</span>
-            <span class="char-count" id="char-count" style="color:var(--green)">0/3000</span>
-          </div>
-
-          <textarea class="textarea-post" id="post-editor"
-            placeholder="Start typing your post here, or use AI Write above...
-
-Tip: Start with a hook that stops the scroll!"
-            oninput="onPostInput()"></textarea>
-
-          <div class="btn-row">
-            <button class="btn btn-primary" onclick="copyPost()" id="copy-btn">📋 Copy Post</button>
-            <button class="btn btn-ghost" onclick="getHashtags()" id="hash-btn"># Get Hashtags</button>
-            <button class="btn btn-ghost" onclick="scorePost()" id="score-btn">📊 Score Post</button>
-            <button class="btn btn-ghost" onclick="addHashtagsToPost()" id="add-hash-btn" style="font-size:11px">+ Add Hashtags</button>
-            <button class="btn btn-danger" onclick="clearStudio()">🗑️ Clear All</button>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn btn-ghost" onclick="rewritePost('shorter')" id="rw1">✂️ Shorter</button>
-            <button class="btn btn-ghost" onclick="rewritePost('stronger')" id="rw2">💥 Stronger</button>
-            <button class="btn btn-ghost" onclick="rewritePost('simpler')" id="rw3">🧠 Simpler</button>
-            <button class="btn btn-ghost" onclick="rewritePost('professional')" id="rw4">💼 Professional</button>
-          </div>
-        </div>
-
-        <div class="card" id="hooks-box" style="display:none">
-          <span class="lbl">🎣 AI Hook Suggestions</span>
-          <div id="hooks-list" style="display:flex;flex-direction:column;gap:8px"></div>
-        </div>
-
-        <div class="card" id="ideas-box" style="display:none">
-          <span class="lbl">💡 Content Ideas</span>
-          <div id="ideas-list" style="display:flex;flex-direction:column;gap:8px"></div>
-        </div>
-
-        <div class="card" id="hashtag-box" style="display:none">
-          <span class="lbl"># AI Suggested Hashtags <span style="opacity:0.5;text-transform:none;font-size:10px">(click to add one)</span></span>
-          <div id="hashtag-list" style="display:flex;flex-wrap:wrap;gap:7px"></div>
-        </div>
-
-        <div class="card" id="score-box" style="display:none">
-          <span class="lbl">📊 Post Score Analysis</span>
-          <div class="score-row">
-            <canvas id="score-ring" width="80" height="80"></canvas>
-            <div class="score-tip" id="score-tip-text">—</div>
-          </div>
-          <div class="score-bars" id="score-bars"></div>
-        </div>
-      </div>
-
-      <div>
-        <span class="lbl">👁️ Live LinkedIn Preview</span>
-        <div id="li-preview">
-          <div class="li-header">
-            <div class="li-avatar">MG</div>
-            <div>
-              <div class="li-name">Manu Gupta</div>
-              <div class="li-sub">LinkedIn Growth Coach • 2nd</div>
-              <div class="li-time">Just now · 🌐</div>
-            </div>
-            <div style="margin-left:auto;font-size:18px;color:#666;cursor:pointer">•••</div>
-          </div>
-          <div class="li-body" id="li-body">
-            <span style="color:#aaa;font-family:sans-serif;font-size:13px">Your post will appear here as you type...</span>
-          </div>
-          <div class="li-reactions">
-            <div style="display:flex;align-items:center;gap:4px"><span>👍❤️💡</span><span>247 reactions</span></div>
-            <span>38 comments</span>
-          </div>
-          <div class="li-actions">
-            <div class="li-action">👍 Like</div>
-            <div class="li-action">💬 Comment</div>
-            <div class="li-action">🔄 Repost</div>
-            <div class="li-action">📤 Send</div>
-          </div>
-        </div>
-        <div class="info-box">📌 This preview updates live. Copy → paste → post on LinkedIn.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="panel-image" class="panel" style="display:none">
-  <div class="inner">
-    <div style="text-align:center;margin-bottom:24px">
-      <div style="font-size:32px;margin-bottom:8px">🎨</div>
-      <h2 style="font-family:'Playfair Display',serif;color:#70b8e8;margin-bottom:6px">LinkedIn Banner Generator</h2>
-      <p style="opacity:0.45;font-size:12px">AI builds the prompt → Pollinations generates 3 unique banners</p>
-    </div>
-
-    <div class="card">
-      <span class="lbl">📝 Your Topic / Niche</span>
-      <input class="inp" id="img-topic" placeholder="e.g. Data analyst, AI trainer, sales coach, HR expert..." onkeydown="if(event.key==='Enter')generateImages()"/>
-    </div>
-
-    <div class="card">
-      <span class="lbl">🎨 Choose Style</span>
-      <div class="style-grid" id="style-grid"></div>
-    </div>
-
-    <button class="btn btn-primary" onclick="generateImages()" id="gen-btn" style="width:100%;padding:14px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px">
-      ✨ Generate 3 Banner Variations
-    </button>
-
-    <div style="background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:12px;opacity:0.8">
-      ⚠️ <strong>Note:</strong> Images load best on GitHub Pages or in a browser tab.
-    </div>
-
-    <div id="img-loading" style="display:none;margin-top:18px;flex-direction:column;gap:10px">
-      <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite">Generating variation 1...</div>
-      <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite;animation-delay:0.3s">Generating variation 2...</div>
-      <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite;animation-delay:0.6s">Generating variation 3...</div>
-    </div>
-
-    <div id="img-results" style="margin-top:18px"></div>
-  </div>
-</div>
-
-<div id="panel-templates" class="panel" style="display:none">
-  <div class="inner">
-    <div style="text-align:center;margin-bottom:22px">
-      <h2 style="font-family:'Playfair Display',serif;color:#70b8e8;margin-bottom:6px">Proven Content Templates</h2>
-      <p style="opacity:0.4;font-size:12px">Click any template — AI Coach will write it for you</p>
-    </div>
-
-    <div class="tmpl-grid" id="tmpl-grid"></div>
-
-    <div class="card card-blue" style="margin-top:20px">
-      <div style="font-weight:700;margin-bottom:12px;color:#70b8e8;font-size:13px">⚡ Data Behind This App</div>
-      <div class="stats-grid">
-        <div><div class="stat-val">987</div><div class="stat-lbl">Posts Analyzed</div></div>
-        <div><div class="stat-val">23.6M</div><div class="stat-lbl">Impressions</div></div>
-        <div><div class="stat-val">50</div><div class="stat-lbl">Posts Deep-Dived</div></div>
-        <div><div class="stat-val">15</div><div class="stat-lbl">Templates</div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<a href="https://www.linkedin.com/in/manugupta79" target="_blank" id="footer">
-  <div class="footer-in">in</div>
-  <span class="footer-text">Designed by <strong>Manu Gupta</strong></span>
-  <span style="font-size:10px;color:rgba(0,119,181,0.6)">↗</span>
-</a>
-
-<script>
 const SYSTEM_PROMPT = `You are a LinkedIn growth coach. Always reply in English. Be concise, practical, engaging, and clear. For posts, use a strong hook, short paragraphs, simple language, and end with a CTA.`;
 const HASH_SYSTEM = `You are a LinkedIn hashtag expert. Return ONLY a valid JSON array of 5 to 7 relevant hashtags with # symbol. Example: ["#LinkedIn","#Growth"]`;
 const SCORE_SYSTEM = `You are a LinkedIn content analyst. Analyze the post and return ONLY valid JSON with keys: score(1-100), hook(1-10), readability(1-10), engagement(1-10), cta(1-10), tip(string under 15 words).`;
@@ -893,30 +74,60 @@ function showApiModal() {
   }
 
   const tg = document.getElementById("tmpl-grid");
-  TEMPLATES.forEach(t => {
-    tg.innerHTML += `<div class="tmpl-card" onclick="useTemplate('${t.name}')">
-      <div class="tmpl-stripe" style="background:${t.color}"></div>
-      <div class="tmpl-emoji">${t.emoji}</div>
-      <div class="tmpl-name">${t.name}</div>
-      <div class="tmpl-desc">${t.desc}</div>
-      <div class="tmpl-badge" style="background:${t.color}">Use →</div>
-    </div>`;
-  });
+  if (tg) {
+    TEMPLATES.forEach(t => {
+      tg.innerHTML += `<div class="tmpl-card" onclick="useTemplate('${t.name}')">
+        <div class="tmpl-stripe" style="background:${t.color}"></div>
+        <div class="tmpl-emoji">${t.emoji}</div>
+        <div class="tmpl-name">${t.name}</div>
+        <div class="tmpl-desc">${t.desc}</div>
+        <div class="tmpl-badge" style="background:${t.color}">Use →</div>
+      </div>`;
+    });
+  }
 
   const sg = document.getElementById("style-grid");
-  IMG_STYLES.forEach(s => {
-    sg.innerHTML += `<div class="style-card${s.id===imgStyle?' active':''}" id="style-${s.id}" onclick="setStyle('${s.id}')">${s.label}</div>`;
-  });
+  if (sg) {
+    IMG_STYLES.forEach(s => {
+      sg.innerHTML += `<div class="style-card${s.id===imgStyle?' active':''}" id="style-${s.id}" onclick="setStyle('${s.id}')">${s.label}</div>`;
+    });
+  }
 })();
 
 function switchTab(id) {
   ["coach","studio","image","templates"].forEach(t => {
-    document.getElementById("panel-"+t).style.display = "none";
-    document.getElementById("tab-"+t).classList.remove("active");
+    const panel = document.getElementById("panel-" + t);
+    const tab = document.getElementById("tab-" + t);
+    if (panel) panel.style.display = "none";
+    if (tab) tab.classList.remove("active");
   });
-  document.getElementById("panel-"+id).style.display = id==="coach" ? "flex" : "block";
-  document.getElementById("tab-"+id).classList.add("active");
-  document.getElementById("tab-name").textContent = TAB_NAMES[id];
+
+  const activePanel = document.getElementById("panel-" + id);
+  const activeTab = document.getElementById("tab-" + id);
+  if (activePanel) activePanel.style.display = id === "coach" ? "flex" : "block";
+  if (activeTab) activeTab.classList.add("active");
+
+  const tabName = document.getElementById("tab-name");
+  if (tabName) tabName.textContent = TAB_NAMES[id];
+}
+
+async function generateWithModel(modelName, key, prompt, maxTokens) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        temperature: 0.7
+      }
+    })
+  });
+
+  const data = await res.json();
+  return { res, data, modelName };
 }
 
 async function callGemini(system, messages, maxTokens = 350) {
@@ -935,41 +146,53 @@ async function callGemini(system, messages, maxTokens = 350) {
       `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`
     ).join("\n");
 
-  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + key;
+  const modelsToTry = [
+    "gemini-2.5-flash-lite",
+    "gemini-1.5-flash"
+  ];
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        maxOutputTokens: maxTokens,
-        temperature: 0.7
+  let lastError = null;
+
+  for (const modelName of modelsToTry) {
+    try {
+      const { res, data } = await generateWithModel(modelName, key, prompt, maxTokens);
+
+      if (res.ok && !data.error) {
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) throw new Error("EMPTY_RESPONSE");
+        return text;
       }
-    })
-  });
 
-  const data = await res.json();
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      const lower = msg.toLowerCase();
 
-  if (!res.ok || data.error) {
-    const msg = data?.error?.message || `HTTP ${res.status}`;
-    const lower = msg.toLowerCase();
+      if (res.status === 404 || lower.includes("not found")) {
+        lastError = new Error("MODEL_NOT_FOUND");
+        continue;
+      }
 
-    if (res.status === 429 || lower.includes("quota") || lower.includes("rate")) {
-      throw new Error("QUOTA_EXCEEDED");
+      if (res.status === 429 || lower.includes("quota") || lower.includes("rate")) {
+        throw new Error("QUOTA_EXCEEDED");
+      }
+
+      if (res.status === 400 || lower.includes("api key") || lower.includes("credential") || lower.includes("auth")) {
+        throw new Error("INVALID_API_KEY");
+      }
+
+      throw new Error(msg);
+    } catch (err) {
+      if (err.message === "MODEL_NOT_FOUND") {
+        lastError = err;
+        continue;
+      }
+      if (err.message === "Failed to fetch") {
+        throw new Error("NETWORK_ERROR");
+      }
+      throw err;
     }
-    if (res.status === 404 || lower.includes("not found")) {
-      throw new Error("MODEL_NOT_FOUND");
-    }
-    if (res.status === 400 || lower.includes("api key") || lower.includes("credential") || lower.includes("auth")) {
-      throw new Error("INVALID_API_KEY");
-    }
-    throw new Error(msg);
   }
 
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error("EMPTY_RESPONSE");
-  return text;
+  throw lastError || new Error("MODEL_NOT_FOUND");
 }
 
 function handleErrorMessage(code) {
@@ -980,7 +203,10 @@ function handleErrorMessage(code) {
     return "⚠️ <strong>Quota exceeded</strong><br>Your Gemini free limit is currently full or requests are too fast.<br><br>Wait a little and try again.";
   }
   if (code === "MODEL_NOT_FOUND") {
-    return "⚠️ <strong>Model issue</strong><br>The requested Gemini model was not found.";
+    return "⚠️ <strong>Model/API issue</strong><br>The Gemini model or endpoint was not found. Please refresh and try again.";
+  }
+  if (code === "NETWORK_ERROR") {
+    return "⚠️ <strong>Network issue</strong><br>Please check internet and refresh the page.";
   }
   if (code === "NO_API_KEY") {
     return "⚠️ <strong>No API key found</strong><br>Please enter your Gemini API key.";
@@ -1050,7 +276,8 @@ function showTyping(v) {
 }
 
 function scrollChat() {
-  document.getElementById("chat-end").scrollIntoView({behavior:"smooth"});
+  const end = document.getElementById("chat-end");
+  if (end) end.scrollIntoView({behavior:"smooth"});
 }
 
 function onPostInput() {
@@ -1064,15 +291,20 @@ function onPostInput() {
 
 function updatePreview(txt) {
   const body = document.getElementById("li-body");
+  if (!body) return;
+
   if (!txt.trim()) {
     body.innerHTML = '<span style="color:#aaa;font-family:sans-serif;font-size:13px">Your post will appear here as you type...</span>';
     return;
   }
+
   const lines = txt.split("\n");
   const isLong = lines.length > 5 || txt.length > 300;
   const shown = isLong ? lines.slice(0,5).join("\n").slice(0,300) : txt;
   let html = fmtPreview(shown) + (isLong ? '<span class="li-more">...more</span>' : "");
-  if (hashtags.length) html += `<div class="li-hashtags">${hashtags.map(h=>`<span class="li-hashtag">${h}</span>`).join(" ")}</div>`;
+  if (hashtags.length) {
+    html += `<div class="li-hashtags">${hashtags.map(h=>`<span class="li-hashtag">${h}</span>`).join(" ")}</div>`;
+  }
   body.innerHTML = html;
 }
 
@@ -1112,7 +344,7 @@ Use a strong hook, short paragraphs, and end with a CTA.`;
     onPostInput();
     switchTab("studio");
   } catch (e) {
-    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not generate post right now.");
+    alert(handlePlainError(e.message));
   } finally {
     btn.textContent = "✨ Write Post";
     btn.disabled = false;
@@ -1144,7 +376,7 @@ Return each hook on a new line only.`;
 
     document.getElementById("hooks-box").style.display = "block";
   } catch (e) {
-    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not generate hooks.");
+    alert(handlePlainError(e.message));
   } finally {
     btn.textContent = "🎣 5 Hooks";
     btn.disabled = false;
@@ -1184,7 +416,7 @@ Return each CTA on a new line only.`;
       onPostInput();
     }
   } catch (e) {
-    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not generate CTA.");
+    alert(handlePlainError(e.message));
   } finally {
     btn.textContent = "📢 Add CTA";
     btn.disabled = false;
@@ -1214,7 +446,7 @@ Return each idea on a new line only.`;
 
     document.getElementById("ideas-box").style.display = "block";
   } catch (e) {
-    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not generate ideas.");
+    alert(handlePlainError(e.message));
   } finally {
     btn.textContent = "💡 10 Ideas";
     btn.disabled = false;
@@ -1246,7 +478,7 @@ async function rewritePost(mode) {
     document.getElementById("post-editor").value = reply.trim();
     onPostInput();
   } catch (e) {
-    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not rewrite post.");
+    alert(handlePlainError(e.message));
   } finally {
     isGenerating = false;
   }
@@ -1323,7 +555,7 @@ async function scorePost() {
 
     document.getElementById("score-box").style.display = "block";
   } catch (e) {
-    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not score post.");
+    alert(handlePlainError(e.message));
   } finally {
     btn.textContent = "📊 Score Post";
     btn.disabled = false;
@@ -1386,7 +618,8 @@ function openInStudio(text) {
 function setStyle(id) {
   imgStyle = id;
   IMG_STYLES.forEach(s => {
-    document.getElementById("style-"+s.id).className = "style-card" + (s.id===id ? " active" : "");
+    const el = document.getElementById("style-" + s.id);
+    if (el) el.className = "style-card" + (s.id===id ? " active" : "");
   });
 }
 
@@ -1441,6 +674,15 @@ function useTemplate(name) {
   setTimeout(() => sendChat(`Write a LinkedIn post using the ${name} template. First ask me for my topic.`), 100);
 }
 
+function handlePlainError(code) {
+  if (code === "QUOTA_EXCEEDED") return "Quota full. Wait a bit and try again.";
+  if (code === "INVALID_API_KEY") return "Invalid API key. Please re-enter it.";
+  if (code === "MODEL_NOT_FOUND") return "Model or endpoint issue. Please refresh and try again.";
+  if (code === "NETWORK_ERROR") return "Network issue. Please check internet.";
+  if (code === "NO_API_KEY") return "Please enter your API key first.";
+  return "Something went wrong. Please try again.";
+}
+
 function copyToClipboard(txt) {
   navigator.clipboard.writeText(txt);
 }
@@ -1465,6 +707,3 @@ function fmtPreview(t) {
     .replace(/→/g,'<span style="color:#0077B5">→</span>')
     .replace(/\n/g,"<br/>");
 }
-</script>
-</body>
-</html>
