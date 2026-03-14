@@ -19,8 +19,17 @@
     --green: #2ecc71;
     --red: #e74c3c;
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-thumb { background: rgba(0,119,181,0.35); border-radius: 3px; }
   input::placeholder, textarea::placeholder { color: rgba(232,234,240,0.25); }
@@ -29,24 +38,62 @@
 
   #header {
     background: linear-gradient(100deg, var(--lb2), var(--lb));
-    padding: 13px 20px; display: flex; align-items: center; gap: 12px;
-    box-shadow: 0 4px 28px rgba(0,119,181,0.4); flex-wrap: wrap; row-gap: 8px;
-    position: sticky; top: 0; z-index: 100;
+    padding: 13px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 28px rgba(0,119,181,0.4);
+    flex-wrap: wrap;
+    row-gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
+
   .logo-box {
-    width: 40px; height: 40px; border-radius: 10px; background: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 19px; font-weight: 900; color: var(--lb); flex-shrink: 0;
-    font-family: 'Playfair Display', serif; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 900;
+    color: var(--lb);
+    flex-shrink: 0;
+    font-family: 'Playfair Display', serif;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
+
   .header-title { font-size: 16px; font-weight: 700; font-family: 'Playfair Display', serif; }
   .header-sub { font-size: 10px; opacity: 0.7; }
-  .nav { display: flex; gap: 4px; background: rgba(0,0,0,0.25); border-radius: 10px; padding: 4px; }
-  .nav-btn {
-    padding: 7px 13px; border-radius: 7px; border: none; background: transparent;
-    color: white; cursor: pointer; font-size: 11px; font-family: 'DM Sans', sans-serif;
-    font-weight: 500; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 5px;
+
+  .nav {
+    display: flex;
+    gap: 4px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+    padding: 4px;
   }
+
+  .nav-btn {
+    padding: 7px 13px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
   .nav-btn.active { background: rgba(255,255,255,0.18); font-weight: 700; }
   .nav-btn:hover { background: rgba(255,255,255,0.1); }
   .tab-label { font-size: 11px; opacity: 0.65; white-space: nowrap; }
@@ -56,92 +103,276 @@
   .inner-lg { max-width: 1100px; margin: 0 auto; }
 
   .card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 14px; padding: 18px; margin-bottom: 14px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
   }
+
   .card-blue { background: rgba(0,119,181,0.07); border-color: rgba(0,119,181,0.2); }
 
-  .lbl { font-size: 11px; color: var(--muted); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 6px; display: block; font-weight: 600; }
+  .lbl {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+    font-weight: 600;
+  }
 
-  .btn { padding: 10px 20px; border-radius: 9px; border: none; cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 700; transition: all 0.2s; }
-  .btn-primary { background: linear-gradient(135deg, var(--lb2), var(--lb)); color: #fff; box-shadow: 0 3px 12px rgba(0,119,181,0.35); }
-  .btn-primary:hover { box-shadow: 0 5px 18px rgba(0,119,181,0.5); transform: translateY(-1px); }
-  .btn-gold { background: linear-gradient(135deg, #a07820, var(--gold)); color: #fff; box-shadow: 0 3px 12px rgba(201,168,76,0.35); }
-  .btn-gold:hover { box-shadow: 0 5px 18px rgba(201,168,76,0.5); transform: translateY(-1px); }
-  .btn-ghost { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+  .btn {
+    padding: 10px 20px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--lb2), var(--lb));
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(0,119,181,0.35);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 5px 18px rgba(0,119,181,0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #a07820, var(--gold));
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(201,168,76,0.35);
+  }
+
+  .btn-gold:hover {
+    box-shadow: 0 5px 18px rgba(201,168,76,0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: var(--bg3);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
   .btn-ghost:hover { background: rgba(255,255,255,0.12); }
-  .btn-danger { background: rgba(231,76,60,0.1); color: var(--red); border: 1px solid rgba(231,76,60,0.25); }
+
+  .btn-danger {
+    background: rgba(231,76,60,0.1);
+    color: var(--red);
+    border: 1px solid rgba(231,76,60,0.25);
+  }
+
   .btn-danger:hover { background: rgba(231,76,60,0.18); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
 
   .inp, .sel {
-    width: 100%; padding: 11px 14px; border-radius: 10px;
-    background: var(--bg3); border: 1px solid var(--border);
-    color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif;
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
     transition: border 0.2s;
   }
+
   .sel option { background: #10141d; color: #fff; }
 
   .textarea-post {
-    width: 100%; min-height: 220px; resize: vertical; padding: 13px;
-    background: var(--bg3); border: 1px solid var(--border);
-    color: var(--text); font-size: 13.5px; font-family: 'Playfair Display', serif;
-    line-height: 1.7; border-radius: 10px; transition: border 0.2s;
+    width: 100%;
+    min-height: 220px;
+    resize: vertical;
+    padding: 13px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13.5px;
+    font-family: 'Playfair Display', serif;
+    line-height: 1.7;
+    border-radius: 10px;
+    transition: border 0.2s;
   }
 
   .chip {
-    background: rgba(0,119,181,0.1); border: 1px solid rgba(0,119,181,0.25);
-    border-radius: 18px; padding: 5px 13px; color: #70b8e8;
-    cursor: pointer; font-size: 11px; font-family: 'DM Sans', sans-serif;
-    transition: all 0.15s; white-space: nowrap;
+    background: rgba(0,119,181,0.1);
+    border: 1px solid rgba(0,119,181,0.25);
+    border-radius: 18px;
+    padding: 5px 13px;
+    color: #70b8e8;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
   }
+
   .chip:hover { background: rgba(0,119,181,0.2); }
-  .chip-red { background: rgba(231,76,60,0.1); border-color: rgba(231,76,60,0.25); color: var(--red); }
-  .chip-red:hover { background: rgba(231,76,60,0.2); }
-  .hash-chip {
-    background: rgba(0,119,181,0.15); border: 1px solid rgba(0,119,181,0.3);
-    border-radius: 16px; padding: 4px 12px; font-size: 12px; color: #70b8e8;
-    cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+
+  .chip-red {
+    background: rgba(231,76,60,0.1);
+    border-color: rgba(231,76,60,0.25);
+    color: var(--red);
   }
+
+  .chip-red:hover { background: rgba(231,76,60,0.2); }
+
+  .hash-chip {
+    background: rgba(0,119,181,0.15);
+    border: 1px solid rgba(0,119,181,0.3);
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #70b8e8;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
   .hash-chip:hover { background: rgba(0,119,181,0.28); }
 
-  #chat-messages { display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
+  #chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 8px;
+  }
+
   .msg { display: flex; }
   .msg.user { justify-content: flex-end; }
+
   .bubble {
-    max-width: 82%; padding: 13px 16px; font-size: 13.5px; line-height: 1.7;
-    border-radius: 18px 18px 18px 4px; background: var(--bg2); border: 1px solid var(--border);
+    max-width: 82%;
+    padding: 13px 16px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 18px 18px 18px 4px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
   }
-  .bubble.user { border-radius: 18px 18px 4px 18px; background: linear-gradient(135deg, var(--lb2), var(--lb)); border: none; box-shadow: 0 4px 16px rgba(0,119,181,0.3); font-family: 'DM Sans', sans-serif; }
-  .bubble-tag { display: flex; align-items: center; gap: 5px; margin-bottom: 7px; opacity: 0.4; font-size: 10px; }
-  .bubble-tag .in-dot { width: 13px; height: 13px; background: var(--lb); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #fff; font-weight: 900; }
+
+  .bubble.user {
+    border-radius: 18px 18px 4px 18px;
+    background: linear-gradient(135deg, var(--lb2), var(--lb));
+    border: none;
+    box-shadow: 0 4px 16px rgba(0,119,181,0.3);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .bubble-tag {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 7px;
+    opacity: 0.4;
+    font-size: 10px;
+  }
+
+  .bubble-tag .in-dot {
+    width: 13px;
+    height: 13px;
+    background: var(--lb);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    color: #fff;
+    font-weight: 900;
+  }
+
   .bubble-actions { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
-  .typing { display: flex; gap: 5px; align-items: center; padding: 14px 18px; background: var(--bg2); border-radius: 18px; border: 1px solid var(--border); }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lb); animation: bounce 1.2s infinite; }
+
+  .typing {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--bg2);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--lb);
+    animation: bounce 1.2s infinite;
+  }
+
   .dot:nth-child(2) { animation-delay: 0.2s; }
   .dot:nth-child(3) { animation-delay: 0.4s; }
 
   #chat-input-area {
-    padding: 10px 16px 14px; max-width: 760px; margin: 0 auto; width: 100%;
-  }
-  .chat-box {
-    display: flex; gap: 9px; align-items: flex-end;
-    background: rgba(255,255,255,0.055); border-radius: 15px;
-    border: 1px solid rgba(255,255,255,0.1); padding: 9px 9px 9px 14px;
-    box-shadow: 0 0 20px rgba(0,119,181,0.08);
-  }
-  #chat-input {
-    flex: 1; background: transparent; border: none; outline: none;
-    color: var(--text); font-size: 13.5px; resize: none;
-    font-family: 'DM Sans', sans-serif; line-height: 1.5; max-height: 95px; overflow-y: auto;
+    padding: 10px 16px 14px;
+    max-width: 760px;
+    margin: 0 auto;
+    width: 100%;
   }
 
-  .studio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
-  @media (max-width: 700px) { .studio-grid { grid-template-columns: 1fr; } }
+  .chat-box {
+    display: flex;
+    gap: 9px;
+    align-items: flex-end;
+    background: rgba(255,255,255,0.055);
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 9px 9px 9px 14px;
+    box-shadow: 0 0 20px rgba(0,119,181,0.08);
+  }
+
+  #chat-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 13.5px;
+    resize: none;
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+    max-height: 95px;
+    overflow-y: auto;
+  }
+
+  .studio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .studio-grid { grid-template-columns: 1fr; }
+  }
+
   .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
   .char-count { font-size: 11px; font-weight: 700; font-family: 'DM Sans', sans-serif; }
-  .mini-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
-  @media (max-width: 520px) { .mini-grid { grid-template-columns:1fr; } }
+
+  .mini-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:12px;
+  }
+
+  @media (max-width: 520px) {
+    .mini-grid { grid-template-columns:1fr; }
+  }
 
   .score-row { display: flex; align-items: center; gap: 18px; margin-bottom: 14px; }
   .score-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -153,10 +384,14 @@
   .score-val { font-size: 12px; font-weight: 700; }
 
   #li-preview {
-    background: #fff; border-radius: 10px; overflow: hidden;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.22); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.22);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: #000;
   }
+
   .li-header { padding: 14px 16px 0; display: flex; align-items: center; gap: 10px; }
   .li-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--lb), var(--lb2)); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; }
   .li-name { font-weight: 700; font-size: 14px; line-height: 1.2; }
@@ -173,38 +408,94 @@
 
   .style-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
   .style-card {
-    padding: 10px 7px; border-radius: 9px; text-align: center; cursor: pointer;
-    border: 1px solid var(--border); background: rgba(255,255,255,0.03);
-    font-size: 12px; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+    padding: 10px 7px;
+    border-radius: 9px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
   }
-  .style-card.active { border-color: var(--lb); background: rgba(0,119,181,0.18); color: #70b8e8; font-weight: 700; }
-  .img-card { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 6px 24px rgba(0,0,0,0.4); margin-bottom: 14px; }
+
+  .style-card.active {
+    border-color: var(--lb);
+    background: rgba(0,119,181,0.18);
+    color: #70b8e8;
+    font-weight: 700;
+  }
+
+  .img-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+    margin-bottom: 14px;
+  }
+
   .img-placeholder { height: 140px; background: var(--bg2); display: flex; align-items: center; justify-content: center; font-size: 12px; opacity: 0.25; }
   .img-footer { background: rgba(255,255,255,0.03); padding: 10px 13px; display: flex; justify-content: flex-end; }
 
   .tmpl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 500px) { .tmpl-grid { grid-template-columns: 1fr; } }
-  .tmpl-card {
-    background: var(--bg2); border: 1px solid var(--border); border-radius: 13px;
-    padding: 16px 16px 16px 20px; cursor: pointer; transition: all 0.2s; position: relative;
+
+  @media (max-width: 500px) {
+    .tmpl-grid { grid-template-columns: 1fr; }
   }
-  .tmpl-card:hover { background: rgba(0,119,181,0.13); border-color: var(--lb); transform: translateY(-2px); }
+
+  .tmpl-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 16px 16px 16px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .tmpl-card:hover {
+    background: rgba(0,119,181,0.13);
+    border-color: var(--lb);
+    transform: translateY(-2px);
+  }
+
   .tmpl-stripe { position: absolute; top: 0; left: 0; width: 3px; height: 100%; border-radius: 2px 0 0 2px; }
   .tmpl-emoji { font-size: 24px; margin-bottom: 6px; }
   .tmpl-name { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
   .tmpl-desc { font-size: 11px; opacity: 0.45; }
   .tmpl-badge { position: absolute; top: 10px; right: 10px; color: #fff; font-size: 9px; padding: 2px 8px; border-radius: 8px; font-weight: 700; }
+
   .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; text-align: center; }
   .stat-val { font-size: 22px; font-weight: 700; color: var(--lb); font-family: 'Playfair Display', serif; }
   .stat-lbl { font-size: 10px; opacity: 0.45; margin-top: 2px; }
 
   #footer {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 10px 16px; background: rgba(255,255,255,0.025);
-    border-top: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.025);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: background 0.2s;
   }
+
   #footer:hover { background: rgba(0,119,181,0.1); }
-  .footer-in { width: 20px; height: 20px; border-radius: 5px; background: var(--lb); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: #fff; }
+
+  .footer-in {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: var(--lb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 900;
+    color: #fff;
+  }
+
   .footer-text { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.3px; }
   .footer-text strong { color: #70b8e8; }
 
@@ -212,14 +503,59 @@
   .info-box { background: rgba(0,119,181,0.06); border: 1px solid rgba(0,119,181,0.15); border-radius: 10px; padding: 10px 14px; font-size: 11px; opacity: 0.7; margin-top: 10px; }
   .score-tip { background: rgba(255,200,0,0.08); border: 1px solid rgba(255,200,0,0.18); border-radius: 8px; padding: 7px 10px; font-size: 12px; line-height: 1.5; flex: 1; }
 
-  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
-  @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.6} }
-  @keyframes fadein { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes bounce {
+    0%,60%,100% { transform:translateY(0); }
+    30% { transform:translateY(-6px); }
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:0.3; }
+    50% { opacity:0.6; }
+  }
+
+  @keyframes fadein {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
   .fadein { animation: fadein 0.3s ease forwards; }
 
-  #api-modal { position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px; }
-  .modal-box { background:#0d1117;border:1px solid rgba(0,119,181,0.4);border-radius:18px;padding:32px 28px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.6); }
-  #key-input { width:100%;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#e8eaf0;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;letter-spacing:0.5px;margin:10px 0 6px; }
+  #api-modal {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.88);
+    z-index:9999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  .modal-box {
+    background:#0d1117;
+    border:1px solid rgba(0,119,181,0.4);
+    border-radius:18px;
+    padding:32px 28px;
+    max-width:480px;
+    width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  }
+
+  #key-input {
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.12);
+    color:#e8eaf0;
+    font-size:13px;
+    font-family:'DM Sans',sans-serif;
+    outline:none;
+    box-sizing:border-box;
+    letter-spacing:0.5px;
+    margin:10px 0 6px;
+  }
+
   #key-input:focus { border-color:rgba(0,119,181,0.5); }
 </style>
 </head>
@@ -272,10 +608,13 @@
       <button class="chip" onclick="sendChat('Give me a LinkedIn content strategy for personal branding')">📈 Content strategy</button>
       <button class="chip chip-red" onclick="clearChat()" style="margin-left:auto">🗑️ Clear Chat</button>
     </div>
+
     <div id="chat-messages"></div>
+
     <div id="typing" style="display:none" class="msg">
       <div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
+
     <div id="chat-end"></div>
   </div>
 
@@ -293,6 +632,7 @@
   <div class="inner-lg">
     <div class="card card-blue" style="margin-bottom:16px">
       <span class="lbl">⚡ AI Write — Enter a topic and let AI draft your post</span>
+
       <div style="display:flex;gap:9px;flex-wrap:wrap">
         <input class="inp" id="ai-topic" placeholder='e.g. "How I learned AI tools faster as a beginner"' onkeydown="if(event.key==='Enter')aiWritePost()"/>
         <button class="btn btn-gold" onclick="aiWritePost()" id="ai-write-btn" style="white-space:nowrap">✨ Write Post</button>
@@ -333,6 +673,7 @@
             <span class="lbl">✍️ Your Post</span>
             <span class="char-count" id="char-count" style="color:var(--green)">0/3000</span>
           </div>
+
           <textarea class="textarea-post" id="post-editor"
             placeholder="Start typing your post here, or use AI Write above...
 
@@ -419,25 +760,31 @@ Tip: Start with a hook that stops the scroll!"
       <h2 style="font-family:'Playfair Display',serif;color:#70b8e8;margin-bottom:6px">LinkedIn Banner Generator</h2>
       <p style="opacity:0.45;font-size:12px">AI builds the prompt → Pollinations generates 3 unique banners</p>
     </div>
+
     <div class="card">
       <span class="lbl">📝 Your Topic / Niche</span>
       <input class="inp" id="img-topic" placeholder="e.g. Data analyst, AI trainer, sales coach, HR expert..." onkeydown="if(event.key==='Enter')generateImages()"/>
     </div>
+
     <div class="card">
       <span class="lbl">🎨 Choose Style</span>
       <div class="style-grid" id="style-grid"></div>
     </div>
+
     <button class="btn btn-primary" onclick="generateImages()" id="gen-btn" style="width:100%;padding:14px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px">
       ✨ Generate 3 Banner Variations
     </button>
+
     <div style="background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:12px;opacity:0.8">
       ⚠️ <strong>Note:</strong> Images load best on GitHub Pages or in a browser tab.
     </div>
+
     <div id="img-loading" style="display:none;margin-top:18px;flex-direction:column;gap:10px">
       <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite">Generating variation 1...</div>
       <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite;animation-delay:0.3s">Generating variation 2...</div>
       <div class="img-placeholder" style="border-radius:11px;animation:pulse 1.5s infinite;animation-delay:0.6s">Generating variation 3...</div>
     </div>
+
     <div id="img-results" style="margin-top:18px"></div>
   </div>
 </div>
@@ -448,7 +795,9 @@ Tip: Start with a hook that stops the scroll!"
       <h2 style="font-family:'Playfair Display',serif;color:#70b8e8;margin-bottom:6px">Proven Content Templates</h2>
       <p style="opacity:0.4;font-size:12px">Click any template — AI Coach will write it for you</p>
     </div>
+
     <div class="tmpl-grid" id="tmpl-grid"></div>
+
     <div class="card card-blue" style="margin-top:20px">
       <div style="font-weight:700;margin-bottom:12px;color:#70b8e8;font-size:13px">⚡ Data Behind This App</div>
       <div class="stats-grid">
@@ -501,6 +850,22 @@ const TAB_NAMES = {
 let chatHistory = [];
 let hashtags = [];
 let imgStyle = "professional";
+let isGenerating = false;
+let lastRequestTime = 0;
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function throttleRequest() {
+  const now = Date.now();
+  const gap = now - lastRequestTime;
+  const minGap = 2500;
+  if (gap < minGap) {
+    await sleep(minGap - gap);
+  }
+  lastRequestTime = Date.now();
+}
 
 function saveKey() {
   const k = document.getElementById("key-input").value.trim();
@@ -554,14 +919,16 @@ function switchTab(id) {
   document.getElementById("tab-name").textContent = TAB_NAMES[id];
 }
 
-async function callGemini(system, messages, maxTokens = 500) {
+async function callGemini(system, messages, maxTokens = 350) {
   const key = localStorage.getItem("manu_gemini_key");
   if (!key) {
     showApiModal();
     throw new Error("NO_API_KEY");
   }
 
-  const trimmedMessages = messages.slice(-6);
+  await throttleRequest();
+
+  const trimmedMessages = messages.slice(-4);
   const prompt =
     system + "\n\n" +
     trimmedMessages.map(m =>
@@ -570,49 +937,68 @@ async function callGemini(system, messages, maxTokens = 500) {
 
   const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + key;
 
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          maxOutputTokens: maxTokens,
-          temperature: 0.7
-        }
-      })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok || data.error) {
-      const msg = data?.error?.message || `HTTP ${res.status}`;
-      const lower = msg.toLowerCase();
-
-      if (res.status === 429 || lower.includes("quota") || lower.includes("rate")) {
-        throw new Error("QUOTA_EXCEEDED");
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        temperature: 0.7
       }
-      if (res.status === 400 || lower.includes("api key") || lower.includes("credential") || lower.includes("auth")) {
-        throw new Error("INVALID_API_KEY");
-      }
-      throw new Error(msg);
+    })
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || data.error) {
+    const msg = data?.error?.message || `HTTP ${res.status}`;
+    const lower = msg.toLowerCase();
+
+    if (res.status === 429 || lower.includes("quota") || lower.includes("rate")) {
+      throw new Error("QUOTA_EXCEEDED");
     }
-
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error("EMPTY_RESPONSE");
-    return text;
-  } catch (err) {
-    if (err.message === "Failed to fetch") throw new Error("NETWORK_ERROR");
-    throw err;
+    if (res.status === 404 || lower.includes("not found")) {
+      throw new Error("MODEL_NOT_FOUND");
+    }
+    if (res.status === 400 || lower.includes("api key") || lower.includes("credential") || lower.includes("auth")) {
+      throw new Error("INVALID_API_KEY");
+    }
+    throw new Error(msg);
   }
+
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("EMPTY_RESPONSE");
+  return text;
+}
+
+function handleErrorMessage(code) {
+  if (code === "INVALID_API_KEY") {
+    return "⚠️ <strong>Invalid API Key</strong><br>Please click 🔑 API Key and enter a valid Gemini key.";
+  }
+  if (code === "QUOTA_EXCEEDED") {
+    return "⚠️ <strong>Quota exceeded</strong><br>Your Gemini free limit is currently full or requests are too fast.<br><br>Wait a little and try again.";
+  }
+  if (code === "MODEL_NOT_FOUND") {
+    return "⚠️ <strong>Model issue</strong><br>The requested Gemini model was not found.";
+  }
+  if (code === "NO_API_KEY") {
+    return "⚠️ <strong>No API key found</strong><br>Please enter your Gemini API key.";
+  }
+  if (code === "EMPTY_RESPONSE") {
+    return "⚠️ <strong>No response</strong><br>Please try again.";
+  }
+  return "⚠️ <strong>Error</strong><br>" + escHtml(code || "Unknown error");
 }
 
 async function sendChat(text) {
+  if (isGenerating) return;
+
   const inp = document.getElementById("chat-input");
   const msg = text || inp.value.trim();
   if (!msg) return;
 
-  if (chatHistory.length > 12) chatHistory = chatHistory.slice(-12);
+  if (chatHistory.length > 8) chatHistory = chatHistory.slice(-8);
 
   inp.value = "";
   inp.style.height = "auto";
@@ -620,28 +1006,20 @@ async function sendChat(text) {
   chatHistory.push({ role:"user", content:msg });
   addBubble("user", escHtml(msg));
   showTyping(true);
+  isGenerating = true;
 
   try {
-    const reply = await callGemini(SYSTEM_PROMPT, chatHistory, 500);
+    const reply = await callGemini(SYSTEM_PROMPT, chatHistory, 300);
     chatHistory.push({ role:"assistant", content:reply });
     showTyping(false);
     addBubble("assistant", fmtText(reply), true);
   } catch (e) {
     showTyping(false);
-    const msg = e.message || "";
-
-    if (msg === "INVALID_API_KEY") {
-      addBubble("assistant", "⚠️ <strong>Invalid API Key</strong><br>Please click 🔑 API Key and enter a valid Gemini key.");
-    } else if (msg === "QUOTA_EXCEEDED") {
-      addBubble("assistant", "⚠️ <strong>Quota exceeded</strong><br>Your Gemini free limit is currently full.<br><br>Try again later, use a different project key, or reduce request size.");
-    } else if (msg === "NETWORK_ERROR") {
-      addBubble("assistant", "⚠️ <strong>Network issue</strong><br>Please check internet and open the app in Chrome or Edge.");
-    } else if (msg === "NO_API_KEY") {
-      addBubble("assistant", "⚠️ <strong>No API key found</strong><br>Please enter your Gemini API key.");
-    } else {
-      addBubble("assistant", "⚠️ <strong>Error</strong><br>" + escHtml(msg));
-    }
+    addBubble("assistant", handleErrorMessage(e.message || "Unknown error"));
+  } finally {
+    isGenerating = false;
   }
+
   scrollChat();
 }
 
@@ -707,6 +1085,8 @@ function getLength() {
 }
 
 async function aiWritePost() {
+  if (isGenerating) return;
+
   const topic = document.getElementById("ai-topic").value.trim();
   if (!topic) return;
 
@@ -715,6 +1095,7 @@ async function aiWritePost() {
   const btn = document.getElementById("ai-write-btn");
   btn.textContent = "✨ Writing...";
   btn.disabled = true;
+  isGenerating = true;
 
   try {
     const prompt = `Write a LinkedIn post about "${topic}".
@@ -723,7 +1104,7 @@ Length: ${length}.
 Return only the final post text.
 Use a strong hook, short paragraphs, and end with a CTA.`;
 
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 500);
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 320);
     document.getElementById("post-editor").value = reply.trim();
     hashtags = [];
     document.getElementById("hashtag-box").style.display = "none";
@@ -731,26 +1112,30 @@ Use a strong hook, short paragraphs, and end with a CTA.`;
     onPostInput();
     switchTab("studio");
   } catch (e) {
-    alert("Could not generate post right now.");
+    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not generate post right now.");
+  } finally {
+    btn.textContent = "✨ Write Post";
+    btn.disabled = false;
+    isGenerating = false;
   }
-
-  btn.textContent = "✨ Write Post";
-  btn.disabled = false;
 }
 
 async function generateHooks() {
+  if (isGenerating) return;
+
   const topic = document.getElementById("ai-topic").value.trim() || document.getElementById("post-editor").value.trim();
   if (!topic) return;
 
   const btn = document.getElementById("hooks-btn");
   btn.textContent = "⏳ Loading...";
   btn.disabled = true;
+  isGenerating = true;
 
   try {
     const prompt = `Give me 5 short scroll-stopping LinkedIn hooks about this topic: ${topic}
 Return each hook on a new line only.`;
 
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 220);
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 180);
     const hooks = reply.split("\n").map(x => x.trim()).filter(Boolean);
 
     document.getElementById("hooks-list").innerHTML = hooks.map(h => `
@@ -759,11 +1144,12 @@ Return each hook on a new line only.`;
 
     document.getElementById("hooks-box").style.display = "block";
   } catch (e) {
-    alert("Could not generate hooks.");
+    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not generate hooks.");
+  } finally {
+    btn.textContent = "🎣 5 Hooks";
+    btn.disabled = false;
+    isGenerating = false;
   }
-
-  btn.textContent = "🎣 5 Hooks";
-  btn.disabled = false;
 }
 
 function insertHook(hook) {
@@ -774,12 +1160,15 @@ function insertHook(hook) {
 }
 
 async function generateCTA() {
+  if (isGenerating) return;
+
   const txt = document.getElementById("post-editor").value.trim() || document.getElementById("ai-topic").value.trim();
   if (!txt) return;
 
   const btn = document.getElementById("cta-btn");
   btn.textContent = "⏳ Loading...";
   btn.disabled = true;
+  isGenerating = true;
 
   try {
     const prompt = `Write 3 short CTA options for this LinkedIn post/topic:
@@ -787,7 +1176,7 @@ ${txt}
 
 Return each CTA on a new line only.`;
 
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 150);
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 120);
     const firstCTA = reply.split("\n").map(x => x.trim()).filter(Boolean)[0] || "";
     if (firstCTA) {
       const ed = document.getElementById("post-editor");
@@ -795,24 +1184,28 @@ Return each CTA on a new line only.`;
       onPostInput();
     }
   } catch (e) {
-    alert("Could not generate CTA.");
+    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not generate CTA.");
+  } finally {
+    btn.textContent = "📢 Add CTA";
+    btn.disabled = false;
+    isGenerating = false;
   }
-
-  btn.textContent = "📢 Add CTA";
-  btn.disabled = false;
 }
 
 async function generateIdeas() {
+  if (isGenerating) return;
+
   const topic = document.getElementById("ai-topic").value.trim() || "LinkedIn personal branding";
   const btn = document.getElementById("ideas-btn");
   btn.textContent = "⏳ Loading...";
   btn.disabled = true;
+  isGenerating = true;
 
   try {
     const prompt = `Give me 10 LinkedIn post ideas about ${topic}.
 Return each idea on a new line only.`;
 
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 260);
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 220);
     const ideas = reply.split("\n").map(x => x.trim()).filter(Boolean);
 
     document.getElementById("ideas-list").innerHTML = ideas.map(i => `
@@ -821,11 +1214,12 @@ Return each idea on a new line only.`;
 
     document.getElementById("ideas-box").style.display = "block";
   } catch (e) {
-    alert("Could not generate ideas.");
+    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not generate ideas.");
+  } finally {
+    btn.textContent = "💡 10 Ideas";
+    btn.disabled = false;
+    isGenerating = false;
   }
-
-  btn.textContent = "💡 10 Ideas";
-  btn.disabled = false;
 }
 
 function useIdea(idea) {
@@ -834,6 +1228,8 @@ function useIdea(idea) {
 }
 
 async function rewritePost(mode) {
+  if (isGenerating) return;
+
   const txt = document.getElementById("post-editor").value.trim();
   if (!txt) return;
 
@@ -844,25 +1240,31 @@ async function rewritePost(mode) {
     professional: "Rewrite this LinkedIn post in a more professional tone."
   };
 
+  isGenerating = true;
   try {
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:`${map[mode]}\n\nPost:\n${txt}`}], 450);
+    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:`${map[mode]}\n\nPost:\n${txt}`}], 300);
     document.getElementById("post-editor").value = reply.trim();
     onPostInput();
   } catch (e) {
-    alert("Could not rewrite post.");
+    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not rewrite post.");
+  } finally {
+    isGenerating = false;
   }
 }
 
 async function getHashtags() {
+  if (isGenerating) return;
+
   const txt = document.getElementById("post-editor").value.trim();
   if (!txt) return;
 
   const btn = document.getElementById("hash-btn");
   btn.textContent = "⏳ Loading...";
   btn.disabled = true;
+  isGenerating = true;
 
   try {
-    const raw = await callGemini(HASH_SYSTEM, [{role:"user", content:txt}], 150);
+    const raw = await callGemini(HASH_SYSTEM, [{role:"user", content:txt}], 120);
     const arr = JSON.parse(raw.replace(/```json|```/g,"").trim());
     hashtags = Array.isArray(arr) ? arr : ["#LinkedIn","#PersonalBrand","#Growth"];
     document.getElementById("hashtag-list").innerHTML = hashtags.map(h => `<span class="hash-chip" onclick="appendHashtag('${h}')">${h}</span>`).join("");
@@ -872,10 +1274,11 @@ async function getHashtags() {
     hashtags = ["#LinkedIn","#PersonalBrand","#Growth"];
     document.getElementById("hashtag-list").innerHTML = hashtags.map(h => `<span class="hash-chip" onclick="appendHashtag('${h}')">${h}</span>`).join("");
     document.getElementById("hashtag-box").style.display = "block";
+  } finally {
+    btn.textContent = "# Get Hashtags";
+    btn.disabled = false;
+    isGenerating = false;
   }
-
-  btn.textContent = "# Get Hashtags";
-  btn.disabled = false;
 }
 
 function appendHashtag(h) {
@@ -892,15 +1295,18 @@ function addHashtagsToPost() {
 }
 
 async function scorePost() {
+  if (isGenerating) return;
+
   const txt = document.getElementById("post-editor").value.trim();
   if (!txt) return;
 
   const btn = document.getElementById("score-btn");
   btn.textContent = "⏳ Scoring...";
   btn.disabled = true;
+  isGenerating = true;
 
   try {
-    const raw = await callGemini(SCORE_SYSTEM, [{role:"user", content:txt}], 220);
+    const raw = await callGemini(SCORE_SYSTEM, [{role:"user", content:txt}], 180);
     const s = JSON.parse(raw.replace(/```json|```/g,"").trim());
 
     drawScoreRing(s.score);
@@ -917,11 +1323,12 @@ async function scorePost() {
 
     document.getElementById("score-box").style.display = "block";
   } catch (e) {
-    alert("Could not score post.");
+    alert((e.message === "QUOTA_EXCEEDED") ? "Quota full. Wait a bit and try again." : "Could not score post.");
+  } finally {
+    btn.textContent = "📊 Score Post";
+    btn.disabled = false;
+    isGenerating = false;
   }
-
-  btn.textContent = "📊 Score Post";
-  btn.disabled = false;
 }
 
 function drawScoreRing(score) {
@@ -984,6 +1391,8 @@ function setStyle(id) {
 }
 
 async function generateImages() {
+  if (isGenerating) return;
+
   const topic = document.getElementById("img-topic").value.trim();
   if (!topic) return;
 
@@ -992,9 +1401,10 @@ async function generateImages() {
   btn.disabled = true;
   document.getElementById("img-loading").style.display = "flex";
   document.getElementById("img-results").innerHTML = "";
+  isGenerating = true;
 
   try {
-    const aiPrompt = await callGemini(IMG_SYSTEM, [{role:"user", content:"Topic: " + topic}], 60);
+    const aiPrompt = await callGemini(IMG_SYSTEM, [{role:"user", content:"Topic: " + topic}], 50);
     const extra = IMG_STYLES.find(s => s.id===imgStyle)?.extra || "";
     const final = `${aiPrompt.trim()}, ${extra}, LinkedIn banner, no text, ultra HD`;
 
@@ -1018,11 +1428,12 @@ async function generateImages() {
     res.innerHTML += `<div class="tip-box">💡 <strong>Tip:</strong> Download your favorite banner and use it as a LinkedIn banner or post creative.</div>`;
   } catch (e) {
     document.getElementById("img-loading").style.display = "none";
-    document.getElementById("img-results").innerHTML = `<div style="color:var(--red);font-size:13px">⚠️ Error generating images. Please try again.</div>`;
+    document.getElementById("img-results").innerHTML = `<div style="color:var(--red);font-size:13px">${handleErrorMessage(e.message || "Unknown error")}</div>`;
+  } finally {
+    btn.textContent = "✨ Generate 3 Banner Variations";
+    btn.disabled = false;
+    isGenerating = false;
   }
-
-  btn.textContent = "✨ Generate 3 Banner Variations";
-  btn.disabled = false;
 }
 
 function useTemplate(name) {
