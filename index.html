@@ -1,709 +1,193 @@
-const SYSTEM_PROMPT = `You are a LinkedIn growth coach. Always reply in English. Be concise, practical, engaging, and clear. For posts, use a strong hook, short paragraphs, simple language, and end with a CTA.`;
-const HASH_SYSTEM = `You are a LinkedIn hashtag expert. Return ONLY a valid JSON array of 5 to 7 relevant hashtags with # symbol. Example: ["#LinkedIn","#Growth"]`;
-const SCORE_SYSTEM = `You are a LinkedIn content analyst. Analyze the post and return ONLY valid JSON with keys: score(1-100), hook(1-10), readability(1-10), engagement(1-10), cta(1-10), tip(string under 15 words).`;
-const IMG_SYSTEM = `Generate a short English image prompt for a professional LinkedIn banner. Return only the prompt.`;
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
-const TEMPLATES = [
-  { name:"Anti-Guru Confession", emoji:"🎭", desc:"Admit what others won't say", color:"#e74c3c" },
-  { name:"Transformation Story", emoji:"🚀", desc:"Before → After narrative", color:"#2ecc71" },
-  { name:"Contrarian Take", emoji:"⚡", desc:"Challenge common advice", color:"#f39c12" },
-  { name:"Behind The Scenes", emoji:"🎬", desc:"Show your real process", color:"#9b59b6" },
-  { name:"Lessons Learned", emoji:"💡", desc:"Number-based insight post", color:"#3498db" },
-  { name:"Client Win Story", emoji:"🏆", desc:"Social proof + lesson", color:"#C9A84C" },
-];
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-const IMG_STYLES = [
-  { id:"professional", label:"💼 Professional", extra:"clean corporate office minimal white background" },
-  { id:"tech", label:"🤖 Tech / AI", extra:"futuristic technology AI neural network glowing blue" },
-  { id:"nature", label:"🌿 Calm Nature", extra:"serene nature zen peaceful minimal soft light" },
-  { id:"bold", label:"🔥 Bold Dark", extra:"dramatic dark cinematic studio moody lighting" },
-  { id:"gradient", label:"🌈 Gradient", extra:"beautiful colorful gradient abstract modern" },
-  { id:"workspace", label:"🖥️ Workspace", extra:"modern desk laptop coffee workspace top view" },
-];
+<title>Manu's LinkedIn AI Coach</title>
 
-const TAB_NAMES = {
-  coach:"🤖 AI Coach",
-  studio:"✍️ Post Studio",
-  image:"🎨 Image Generator",
-  templates:"📋 Templates"
-};
+<style>
 
-let chatHistory = [];
-let hashtags = [];
-let imgStyle = "professional";
-let isGenerating = false;
-let lastRequestTime = 0;
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+body{
+font-family: Arial;
+background:#0f172a;
+color:white;
+margin:0;
+padding:0;
 }
 
-async function throttleRequest() {
-  const now = Date.now();
-  const gap = now - lastRequestTime;
-  const minGap = 2500;
-  if (gap < minGap) {
-    await sleep(minGap - gap);
-  }
-  lastRequestTime = Date.now();
+.header{
+background:#1e3a8a;
+padding:15px;
+font-size:20px;
+font-weight:bold;
 }
 
-function saveKey() {
-  const k = document.getElementById("key-input").value.trim();
-  if (!k || !k.startsWith("AIza")) {
-    alert("Please enter a valid Gemini API key.");
-    return;
-  }
-  localStorage.setItem("manu_gemini_key", k);
-  chatHistory = [];
-  document.getElementById("api-modal").style.display = "none";
-  addBubble("assistant", `<strong>Welcome to Manu's LinkedIn App!</strong> 🚀<br><br>Your Gemini key is saved.<br><br>I can help you with:<br>→ Viral LinkedIn posts<br>→ Hooks and CTAs<br>→ Hashtags and post scoring<br>→ Banner ideas and content planning<br><br>Tell me your niche or topic.`);
+.container{
+max-width:800px;
+margin:auto;
+padding:20px;
 }
 
-function showApiModal() {
-  document.getElementById("api-modal").style.display = "flex";
+.chat-box{
+background:#111827;
+border-radius:10px;
+padding:20px;
+min-height:400px;
 }
 
-(function init() {
-  const savedKey = localStorage.getItem("manu_gemini_key");
-  if (savedKey) {
-    document.getElementById("api-modal").style.display = "none";
-    addBubble("assistant", `<strong>Welcome back!</strong> 🚀<br><br>Ready to create LinkedIn content today?<br><br>Tell me your topic, niche, or goal.`);
-  } else {
-    document.getElementById("chat-messages").innerHTML = "";
-  }
-
-  const tg = document.getElementById("tmpl-grid");
-  if (tg) {
-    TEMPLATES.forEach(t => {
-      tg.innerHTML += `<div class="tmpl-card" onclick="useTemplate('${t.name}')">
-        <div class="tmpl-stripe" style="background:${t.color}"></div>
-        <div class="tmpl-emoji">${t.emoji}</div>
-        <div class="tmpl-name">${t.name}</div>
-        <div class="tmpl-desc">${t.desc}</div>
-        <div class="tmpl-badge" style="background:${t.color}">Use →</div>
-      </div>`;
-    });
-  }
-
-  const sg = document.getElementById("style-grid");
-  if (sg) {
-    IMG_STYLES.forEach(s => {
-      sg.innerHTML += `<div class="style-card${s.id===imgStyle?' active':''}" id="style-${s.id}" onclick="setStyle('${s.id}')">${s.label}</div>`;
-    });
-  }
-})();
-
-function switchTab(id) {
-  ["coach","studio","image","templates"].forEach(t => {
-    const panel = document.getElementById("panel-" + t);
-    const tab = document.getElementById("tab-" + t);
-    if (panel) panel.style.display = "none";
-    if (tab) tab.classList.remove("active");
-  });
-
-  const activePanel = document.getElementById("panel-" + id);
-  const activeTab = document.getElementById("tab-" + id);
-  if (activePanel) activePanel.style.display = id === "coach" ? "flex" : "block";
-  if (activeTab) activeTab.classList.add("active");
-
-  const tabName = document.getElementById("tab-name");
-  if (tabName) tabName.textContent = TAB_NAMES[id];
+.message{
+margin:10px 0;
 }
 
-async function generateWithModel(modelName, key, prompt, maxTokens) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`;
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        maxOutputTokens: maxTokens,
-        temperature: 0.7
-      }
-    })
-  });
-
-  const data = await res.json();
-  return { res, data, modelName };
+.user{
+color:#93c5fd;
 }
 
-async function callGemini(system, messages, maxTokens = 350) {
-  const key = localStorage.getItem("manu_gemini_key");
-  if (!key) {
-    showApiModal();
-    throw new Error("NO_API_KEY");
-  }
-
-  await throttleRequest();
-
-  const trimmedMessages = messages.slice(-4);
-  const prompt =
-    system + "\n\n" +
-    trimmedMessages.map(m =>
-      `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`
-    ).join("\n");
-
-  const modelsToTry = [
-    "gemini-2.5-flash-lite",
-    "gemini-1.5-flash"
-  ];
-
-  let lastError = null;
-
-  for (const modelName of modelsToTry) {
-    try {
-      const { res, data } = await generateWithModel(modelName, key, prompt, maxTokens);
-
-      if (res.ok && !data.error) {
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!text) throw new Error("EMPTY_RESPONSE");
-        return text;
-      }
-
-      const msg = data?.error?.message || `HTTP ${res.status}`;
-      const lower = msg.toLowerCase();
-
-      if (res.status === 404 || lower.includes("not found")) {
-        lastError = new Error("MODEL_NOT_FOUND");
-        continue;
-      }
-
-      if (res.status === 429 || lower.includes("quota") || lower.includes("rate")) {
-        throw new Error("QUOTA_EXCEEDED");
-      }
-
-      if (res.status === 400 || lower.includes("api key") || lower.includes("credential") || lower.includes("auth")) {
-        throw new Error("INVALID_API_KEY");
-      }
-
-      throw new Error(msg);
-    } catch (err) {
-      if (err.message === "MODEL_NOT_FOUND") {
-        lastError = err;
-        continue;
-      }
-      if (err.message === "Failed to fetch") {
-        throw new Error("NETWORK_ERROR");
-      }
-      throw err;
-    }
-  }
-
-  throw lastError || new Error("MODEL_NOT_FOUND");
+.bot{
+color:#facc15;
 }
 
-function handleErrorMessage(code) {
-  if (code === "INVALID_API_KEY") {
-    return "⚠️ <strong>Invalid API Key</strong><br>Please click 🔑 API Key and enter a valid Gemini key.";
-  }
-  if (code === "QUOTA_EXCEEDED") {
-    return "⚠️ <strong>Quota exceeded</strong><br>Your Gemini free limit is currently full or requests are too fast.<br><br>Wait a little and try again.";
-  }
-  if (code === "MODEL_NOT_FOUND") {
-    return "⚠️ <strong>Model/API issue</strong><br>The Gemini model or endpoint was not found. Please refresh and try again.";
-  }
-  if (code === "NETWORK_ERROR") {
-    return "⚠️ <strong>Network issue</strong><br>Please check internet and refresh the page.";
-  }
-  if (code === "NO_API_KEY") {
-    return "⚠️ <strong>No API key found</strong><br>Please enter your Gemini API key.";
-  }
-  if (code === "EMPTY_RESPONSE") {
-    return "⚠️ <strong>No response</strong><br>Please try again.";
-  }
-  return "⚠️ <strong>Error</strong><br>" + escHtml(code || "Unknown error");
+input{
+width:80%;
+padding:10px;
+border-radius:6px;
+border:none;
 }
 
-async function sendChat(text) {
-  if (isGenerating) return;
-
-  const inp = document.getElementById("chat-input");
-  const msg = text || inp.value.trim();
-  if (!msg) return;
-
-  if (chatHistory.length > 8) chatHistory = chatHistory.slice(-8);
-
-  inp.value = "";
-  inp.style.height = "auto";
-
-  chatHistory.push({ role:"user", content:msg });
-  addBubble("user", escHtml(msg));
-  showTyping(true);
-  isGenerating = true;
-
-  try {
-    const reply = await callGemini(SYSTEM_PROMPT, chatHistory, 300);
-    chatHistory.push({ role:"assistant", content:reply });
-    showTyping(false);
-    addBubble("assistant", fmtText(reply), true);
-  } catch (e) {
-    showTyping(false);
-    addBubble("assistant", handleErrorMessage(e.message || "Unknown error"));
-  } finally {
-    isGenerating = false;
-  }
-
-  scrollChat();
+button{
+padding:10px 15px;
+border:none;
+border-radius:6px;
+background:#2563eb;
+color:white;
+cursor:pointer;
 }
 
-function clearChat() {
-  chatHistory = [];
-  document.getElementById("chat-messages").innerHTML = "";
-  addBubble("assistant", "Chat cleared! Fresh start 🚀<br><br>What topic do you want to work on today?");
+button:hover{
+background:#1d4ed8;
 }
 
-function addBubble(role, html, withActions=false) {
-  const wrap = document.createElement("div");
-  wrap.className = "msg fadein" + (role==="user" ? " user" : "");
-  wrap.innerHTML = `<div class="bubble${role==="user" ? " user" : ""}">
-    ${role==="assistant" ? `<div class="bubble-tag"><div class="in-dot">in</div> LinkedIn Coach</div>` : ""}
-    <div>${html}</div>
-    ${withActions ? `<div class="bubble-actions">
-      <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="copyToClipboard(this.parentElement.parentElement.querySelector('div:not(.bubble-tag):not(.bubble-actions)').innerText)">📋 Copy</button>
-      <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="openInStudio(this.parentElement.parentElement.querySelector('div:not(.bubble-tag):not(.bubble-actions)').innerText)">✍️ Open in Studio</button>
-    </div>` : ""}
-  </div>`;
-  document.getElementById("chat-messages").appendChild(wrap);
-  scrollChat();
+.api-box{
+margin-bottom:20px;
 }
 
-function showTyping(v) {
-  document.getElementById("typing").style.display = v ? "flex" : "none";
-  scrollChat();
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+Manu's LinkedIn AI Coach
+</div>
+
+<div class="container">
+
+<div class="api-box">
+<input id="apikey" placeholder="Enter Gemini API Key">
+<button onclick="saveKey()">Save Key</button>
+</div>
+
+<div id="chat" class="chat-box"></div>
+
+<br>
+
+<input id="prompt" placeholder="Ask LinkedIn coach anything">
+<button onclick="send()">Send</button>
+
+</div>
+
+<script>
+
+const SYSTEM_PROMPT = "You are a LinkedIn growth coach. Help users write better posts.";
+
+function saveKey(){
+
+let key = document.getElementById("apikey").value
+
+if(!key){
+alert("Enter API key")
+return
 }
 
-function scrollChat() {
-  const end = document.getElementById("chat-end");
-  if (end) end.scrollIntoView({behavior:"smooth"});
+localStorage.setItem("gemini_key",key)
+
+alert("API key saved")
+
 }
 
-function onPostInput() {
-  const txt = document.getElementById("post-editor").value;
-  const n = txt.length;
-  const cc = document.getElementById("char-count");
-  cc.textContent = n + "/3000";
-  cc.style.color = n > 2700 ? "#e74c3c" : n > 2000 ? "#C9A84C" : "#2ecc71";
-  updatePreview(txt);
+function addMessage(role,text){
+
+let chat=document.getElementById("chat")
+
+let div=document.createElement("div")
+
+div.className="message "+role
+
+div.innerText=text
+
+chat.appendChild(div)
+
+chat.scrollTop=chat.scrollHeight
+
 }
 
-function updatePreview(txt) {
-  const body = document.getElementById("li-body");
-  if (!body) return;
+async function send(){
 
-  if (!txt.trim()) {
-    body.innerHTML = '<span style="color:#aaa;font-family:sans-serif;font-size:13px">Your post will appear here as you type...</span>';
-    return;
-  }
+let text=document.getElementById("prompt").value
 
-  const lines = txt.split("\n");
-  const isLong = lines.length > 5 || txt.length > 300;
-  const shown = isLong ? lines.slice(0,5).join("\n").slice(0,300) : txt;
-  let html = fmtPreview(shown) + (isLong ? '<span class="li-more">...more</span>' : "");
-  if (hashtags.length) {
-    html += `<div class="li-hashtags">${hashtags.map(h=>`<span class="li-hashtag">${h}</span>`).join(" ")}</div>`;
-  }
-  body.innerHTML = html;
+if(!text) return
+
+addMessage("user","You: "+text)
+
+document.getElementById("prompt").value=""
+
+let key=localStorage.getItem("gemini_key")
+
+if(!key){
+alert("Please add API key first")
+return
 }
 
-function getTone() {
-  return document.getElementById("tone-select").value;
+let url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`
+
+let body={
+contents:[
+{
+parts:[
+{ text:SYSTEM_PROMPT+"\nUser:"+text }
+]
+}
+]
 }
 
-function getLength() {
-  return document.getElementById("length-select").value;
+try{
+
+let res=await fetch(url,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(body)
+})
+
+let data=await res.json()
+
+let reply=data.candidates[0].content.parts[0].text
+
+addMessage("bot","AI: "+reply)
+
+}catch(e){
+
+addMessage("bot","Error calling API")
+
 }
 
-async function aiWritePost() {
-  if (isGenerating) return;
-
-  const topic = document.getElementById("ai-topic").value.trim();
-  if (!topic) return;
-
-  const tone = getTone();
-  const length = getLength();
-  const btn = document.getElementById("ai-write-btn");
-  btn.textContent = "✨ Writing...";
-  btn.disabled = true;
-  isGenerating = true;
-
-  try {
-    const prompt = `Write a LinkedIn post about "${topic}".
-Tone: ${tone}.
-Length: ${length}.
-Return only the final post text.
-Use a strong hook, short paragraphs, and end with a CTA.`;
-
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 320);
-    document.getElementById("post-editor").value = reply.trim();
-    hashtags = [];
-    document.getElementById("hashtag-box").style.display = "none";
-    document.getElementById("score-box").style.display = "none";
-    onPostInput();
-    switchTab("studio");
-  } catch (e) {
-    alert(handlePlainError(e.message));
-  } finally {
-    btn.textContent = "✨ Write Post";
-    btn.disabled = false;
-    isGenerating = false;
-  }
 }
 
-async function generateHooks() {
-  if (isGenerating) return;
+</script>
 
-  const topic = document.getElementById("ai-topic").value.trim() || document.getElementById("post-editor").value.trim();
-  if (!topic) return;
-
-  const btn = document.getElementById("hooks-btn");
-  btn.textContent = "⏳ Loading...";
-  btn.disabled = true;
-  isGenerating = true;
-
-  try {
-    const prompt = `Give me 5 short scroll-stopping LinkedIn hooks about this topic: ${topic}
-Return each hook on a new line only.`;
-
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 180);
-    const hooks = reply.split("\n").map(x => x.trim()).filter(Boolean);
-
-    document.getElementById("hooks-list").innerHTML = hooks.map(h => `
-      <div class="hash-chip" style="display:block;padding:10px 12px;border-radius:10px" onclick="insertHook(${JSON.stringify(h)})">${escHtml(h)}</div>
-    `).join("");
-
-    document.getElementById("hooks-box").style.display = "block";
-  } catch (e) {
-    alert(handlePlainError(e.message));
-  } finally {
-    btn.textContent = "🎣 5 Hooks";
-    btn.disabled = false;
-    isGenerating = false;
-  }
-}
-
-function insertHook(hook) {
-  const ed = document.getElementById("post-editor");
-  const rest = ed.value.trim();
-  ed.value = hook + "\n\n" + rest;
-  onPostInput();
-}
-
-async function generateCTA() {
-  if (isGenerating) return;
-
-  const txt = document.getElementById("post-editor").value.trim() || document.getElementById("ai-topic").value.trim();
-  if (!txt) return;
-
-  const btn = document.getElementById("cta-btn");
-  btn.textContent = "⏳ Loading...";
-  btn.disabled = true;
-  isGenerating = true;
-
-  try {
-    const prompt = `Write 3 short CTA options for this LinkedIn post/topic:
-${txt}
-
-Return each CTA on a new line only.`;
-
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 120);
-    const firstCTA = reply.split("\n").map(x => x.trim()).filter(Boolean)[0] || "";
-    if (firstCTA) {
-      const ed = document.getElementById("post-editor");
-      ed.value = ed.value.trim() + "\n\n" + firstCTA;
-      onPostInput();
-    }
-  } catch (e) {
-    alert(handlePlainError(e.message));
-  } finally {
-    btn.textContent = "📢 Add CTA";
-    btn.disabled = false;
-    isGenerating = false;
-  }
-}
-
-async function generateIdeas() {
-  if (isGenerating) return;
-
-  const topic = document.getElementById("ai-topic").value.trim() || "LinkedIn personal branding";
-  const btn = document.getElementById("ideas-btn");
-  btn.textContent = "⏳ Loading...";
-  btn.disabled = true;
-  isGenerating = true;
-
-  try {
-    const prompt = `Give me 10 LinkedIn post ideas about ${topic}.
-Return each idea on a new line only.`;
-
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:prompt}], 220);
-    const ideas = reply.split("\n").map(x => x.trim()).filter(Boolean);
-
-    document.getElementById("ideas-list").innerHTML = ideas.map(i => `
-      <div class="hash-chip" style="display:block;padding:10px 12px;border-radius:10px" onclick="useIdea(${JSON.stringify(i)})">${escHtml(i)}</div>
-    `).join("");
-
-    document.getElementById("ideas-box").style.display = "block";
-  } catch (e) {
-    alert(handlePlainError(e.message));
-  } finally {
-    btn.textContent = "💡 10 Ideas";
-    btn.disabled = false;
-    isGenerating = false;
-  }
-}
-
-function useIdea(idea) {
-  document.getElementById("ai-topic").value = idea.replace(/^\d+[\).\-\s]*/, "");
-  switchTab("studio");
-}
-
-async function rewritePost(mode) {
-  if (isGenerating) return;
-
-  const txt = document.getElementById("post-editor").value.trim();
-  if (!txt) return;
-
-  const map = {
-    shorter: "Make this LinkedIn post shorter but keep it strong.",
-    stronger: "Rewrite this LinkedIn post to sound stronger and more engaging.",
-    simpler: "Rewrite this LinkedIn post in simpler English.",
-    professional: "Rewrite this LinkedIn post in a more professional tone."
-  };
-
-  isGenerating = true;
-  try {
-    const reply = await callGemini(SYSTEM_PROMPT, [{role:"user", content:`${map[mode]}\n\nPost:\n${txt}`}], 300);
-    document.getElementById("post-editor").value = reply.trim();
-    onPostInput();
-  } catch (e) {
-    alert(handlePlainError(e.message));
-  } finally {
-    isGenerating = false;
-  }
-}
-
-async function getHashtags() {
-  if (isGenerating) return;
-
-  const txt = document.getElementById("post-editor").value.trim();
-  if (!txt) return;
-
-  const btn = document.getElementById("hash-btn");
-  btn.textContent = "⏳ Loading...";
-  btn.disabled = true;
-  isGenerating = true;
-
-  try {
-    const raw = await callGemini(HASH_SYSTEM, [{role:"user", content:txt}], 120);
-    const arr = JSON.parse(raw.replace(/```json|```/g,"").trim());
-    hashtags = Array.isArray(arr) ? arr : ["#LinkedIn","#PersonalBrand","#Growth"];
-    document.getElementById("hashtag-list").innerHTML = hashtags.map(h => `<span class="hash-chip" onclick="appendHashtag('${h}')">${h}</span>`).join("");
-    document.getElementById("hashtag-box").style.display = "block";
-    updatePreview(document.getElementById("post-editor").value);
-  } catch (e) {
-    hashtags = ["#LinkedIn","#PersonalBrand","#Growth"];
-    document.getElementById("hashtag-list").innerHTML = hashtags.map(h => `<span class="hash-chip" onclick="appendHashtag('${h}')">${h}</span>`).join("");
-    document.getElementById("hashtag-box").style.display = "block";
-  } finally {
-    btn.textContent = "# Get Hashtags";
-    btn.disabled = false;
-    isGenerating = false;
-  }
-}
-
-function appendHashtag(h) {
-  const ed = document.getElementById("post-editor");
-  ed.value += "\n" + h;
-  onPostInput();
-}
-
-function addHashtagsToPost() {
-  if (!hashtags.length) return;
-  const ed = document.getElementById("post-editor");
-  ed.value += "\n\n" + hashtags.join(" ");
-  onPostInput();
-}
-
-async function scorePost() {
-  if (isGenerating) return;
-
-  const txt = document.getElementById("post-editor").value.trim();
-  if (!txt) return;
-
-  const btn = document.getElementById("score-btn");
-  btn.textContent = "⏳ Scoring...";
-  btn.disabled = true;
-  isGenerating = true;
-
-  try {
-    const raw = await callGemini(SCORE_SYSTEM, [{role:"user", content:txt}], 180);
-    const s = JSON.parse(raw.replace(/```json|```/g,"").trim());
-
-    drawScoreRing(s.score);
-    document.getElementById("score-tip-text").textContent = "💡 " + s.tip;
-    document.getElementById("score-bars").innerHTML = [
-      ["🎣 Hook", s.hook],
-      ["📖 Readability", s.readability],
-      ["💬 Engagement", s.engagement],
-      ["📢 CTA", s.cta]
-    ].map(([l,v]) => {
-      const col = v>=7 ? "#2ecc71" : v>=5 ? "#C9A84C" : "#e74c3c";
-      return `<div class="score-bar-card"><div class="score-bar-label">${l}</div><div class="score-bar-row"><div class="bar-track"><div class="bar-fill" style="width:${v*10}%;background:${col}"></div></div><span class="score-val" style="color:${col}">${v}/10</span></div></div>`;
-    }).join("");
-
-    document.getElementById("score-box").style.display = "block";
-  } catch (e) {
-    alert(handlePlainError(e.message));
-  } finally {
-    btn.textContent = "📊 Score Post";
-    btn.disabled = false;
-    isGenerating = false;
-  }
-}
-
-function drawScoreRing(score) {
-  const c = document.getElementById("score-ring");
-  const ctx = c.getContext("2d");
-  const r = 33, cx = 40, cy = 40, sw = 7;
-  ctx.clearRect(0,0,80,80);
-
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, -Math.PI/2, Math.PI*1.5);
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.lineWidth = sw;
-  ctx.stroke();
-
-  const col = score>=75 ? "#2ecc71" : score>=50 ? "#C9A84C" : "#e74c3c";
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + ((score/100)*Math.PI*2));
-  ctx.strokeStyle = col;
-  ctx.lineWidth = sw;
-  ctx.lineCap = "round";
-  ctx.stroke();
-
-  ctx.fillStyle = col;
-  ctx.font = "bold 16px 'Playfair Display', serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(score, cx, cy);
-}
-
-function copyPost() {
-  const txt = document.getElementById("post-editor").value + (hashtags.length ? "\n\n" + hashtags.join(" ") : "");
-  navigator.clipboard.writeText(txt);
-  const btn = document.getElementById("copy-btn");
-  btn.textContent = "✅ Copied!";
-  setTimeout(() => btn.textContent = "📋 Copy Post", 2000);
-}
-
-function clearStudio() {
-  document.getElementById("post-editor").value = "";
-  document.getElementById("ai-topic").value = "";
-  hashtags = [];
-  document.getElementById("hashtag-box").style.display = "none";
-  document.getElementById("score-box").style.display = "none";
-  document.getElementById("hooks-box").style.display = "none";
-  document.getElementById("ideas-box").style.display = "none";
-  onPostInput();
-}
-
-function openInStudio(text) {
-  document.getElementById("post-editor").value = text.trim();
-  onPostInput();
-  switchTab("studio");
-}
-
-function setStyle(id) {
-  imgStyle = id;
-  IMG_STYLES.forEach(s => {
-    const el = document.getElementById("style-" + s.id);
-    if (el) el.className = "style-card" + (s.id===id ? " active" : "");
-  });
-}
-
-async function generateImages() {
-  if (isGenerating) return;
-
-  const topic = document.getElementById("img-topic").value.trim();
-  if (!topic) return;
-
-  const btn = document.getElementById("gen-btn");
-  btn.textContent = "⏳ Generating your banners...";
-  btn.disabled = true;
-  document.getElementById("img-loading").style.display = "flex";
-  document.getElementById("img-results").innerHTML = "";
-  isGenerating = true;
-
-  try {
-    const aiPrompt = await callGemini(IMG_SYSTEM, [{role:"user", content:"Topic: " + topic}], 50);
-    const extra = IMG_STYLES.find(s => s.id===imgStyle)?.extra || "";
-    const final = `${aiPrompt.trim()}, ${extra}, LinkedIn banner, no text, ultra HD`;
-
-    document.getElementById("img-loading").style.display = "none";
-    const res = document.getElementById("img-results");
-
-    [~~(Math.random()*99999),~~(Math.random()*99999),~~(Math.random()*99999)].forEach((seed,i) => {
-      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(final)}?width=1200&height=628&seed=${seed}&nologo=true&enhance=true`;
-      res.innerHTML += `<div class="img-card fadein">
-        <div style="position:relative;min-height:120px;background:rgba(255,255,255,0.03)">
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0.25;font-size:12px" id="img-ph-${i}">Loading image ${i+1}...</div>
-          <img src="${url}" onload="document.getElementById('img-ph-${i}').style.display='none'" onerror="this.style.display='none'" style="width:100%;display:block;opacity:1"/>
-          <div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.6);border-radius:5px;padding:2px 8px;font-size:10px;backdrop-filter:blur(4px)">Variation ${i+1}</div>
-        </div>
-        <div class="img-footer">
-          <a href="${url}" target="_blank" class="btn btn-primary" style="padding:6px 16px;font-size:12px">⬇ Download</a>
-        </div>
-      </div>`;
-    });
-
-    res.innerHTML += `<div class="tip-box">💡 <strong>Tip:</strong> Download your favorite banner and use it as a LinkedIn banner or post creative.</div>`;
-  } catch (e) {
-    document.getElementById("img-loading").style.display = "none";
-    document.getElementById("img-results").innerHTML = `<div style="color:var(--red);font-size:13px">${handleErrorMessage(e.message || "Unknown error")}</div>`;
-  } finally {
-    btn.textContent = "✨ Generate 3 Banner Variations";
-    btn.disabled = false;
-    isGenerating = false;
-  }
-}
-
-function useTemplate(name) {
-  switchTab("coach");
-  setTimeout(() => sendChat(`Write a LinkedIn post using the ${name} template. First ask me for my topic.`), 100);
-}
-
-function handlePlainError(code) {
-  if (code === "QUOTA_EXCEEDED") return "Quota full. Wait a bit and try again.";
-  if (code === "INVALID_API_KEY") return "Invalid API key. Please re-enter it.";
-  if (code === "MODEL_NOT_FOUND") return "Model or endpoint issue. Please refresh and try again.";
-  if (code === "NETWORK_ERROR") return "Network issue. Please check internet.";
-  if (code === "NO_API_KEY") return "Please enter your API key first.";
-  return "Something went wrong. Please try again.";
-}
-
-function copyToClipboard(txt) {
-  navigator.clipboard.writeText(txt);
-}
-
-function escHtml(t) {
-  return String(t)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;");
-}
-
-function fmtText(t) {
-  return escHtml(t)
-    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g,"<em>$1</em>")
-    .replace(/\n/g,"<br/>");
-}
-
-function fmtPreview(t) {
-  return escHtml(t)
-    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
-    .replace(/→/g,'<span style="color:#0077B5">→</span>')
-    .replace(/\n/g,"<br/>");
-}
+</body>
+</html>
