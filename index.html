@@ -549,7 +549,7 @@ async function callClaude(system, messages, maxTokens=1000) {
       "anthropic-version": "2023-06-01",
       "anthropic-dangerous-direct-browser-access": "true"
     },
-    body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:maxTokens, system, messages }),
+    body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:maxTokens, system, messages }),
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
@@ -574,7 +574,14 @@ async function sendChat(text) {
     addBubble("assistant", fmtText(reply), true);
   } catch(e) {
     showTyping(false);
-    addBubble("assistant", "⚠️ Network error. Please try again.");
+    const msg = e.message || "";
+    if (msg.includes("401") || msg.includes("auth") || msg.includes("invalid") || msg.includes("API key")) {
+      addBubble("assistant", "⚠️ <strong>Invalid API Key!</strong><br>Please click 🔑 API Key button and enter a valid key.<br><small style='opacity:0.6'>Make sure you created a NEW key after the old one was shared.</small>");
+    } else if (msg.includes("Failed to fetch") || msg.includes("NetworkError") || msg.includes("CORS")) {
+      addBubble("assistant", "⚠️ <strong>CORS Error!</strong><br>Your browser is blocking the request.<br><br>✅ Fix: Open the app in <strong>Chrome</strong> or <strong>Edge</strong> browser.<br>Also make sure the URL starts with <strong>https://</strong>");
+    } else {
+      addBubble("assistant", "⚠️ Error: " + (msg || "Unknown error") + "<br><small>Click 🔑 API Key to re-enter your key.</small>");
+    }
   }
   scrollChat();
 }
