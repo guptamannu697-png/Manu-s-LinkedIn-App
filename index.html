@@ -543,7 +543,7 @@ async function callClaude(system, messages, maxTokens=1000) {
   if (!key) { showApiModal(); throw new Error("No API key"); }
   const prompt = system + "\n\n" + messages.map(m => (m.role==="user" ? "User: " : "Assistant: ") + m.content).join("\n");
   // Use v1 API with gemini-1.5-flash
-  const res = await fetch("https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + key, {
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + key, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }], generationConfig:{ maxOutputTokens: maxTokens } }),
