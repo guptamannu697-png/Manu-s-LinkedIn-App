@@ -788,56 +788,52 @@ function setStyle(id) {
 }
 
 function generateImages() {
-  const topic = document.getElementById("img-topic").value.trim();
-  if (!topic) return;
-  const btn = document.getElementById("gen-btn");
-  btn.textContent = "⏳ Generating banners..."; btn.disabled = true;
+  var topic = document.getElementById("img-topic").value.trim();
+  if (!topic) { alert("Please enter a topic first!"); return; }
+  
+  var btn = document.getElementById("gen-btn");
+  btn.textContent = "⏳ Generating..."; btn.disabled = true;
+  
+  var res = document.getElementById("img-results");
+  res.innerHTML = "";
   document.getElementById("img-loading").style.display = "none";
-  document.getElementById("img-results").innerHTML = "";
 
-  // Build prompt directly — no API call needed!
-  const extra = IMG_STYLES.find(s=>s.id===imgStyle)?.extra||"professional minimal";
-  const final = topic + ", " + extra + ", professional LinkedIn banner, no text, photorealistic, high quality";
-  
-  const res = document.getElementById("img-results");
-  const seeds = [~~(Math.random()*99999), ~~(Math.random()*99999), ~~(Math.random()*99999)];
-  
-  let loadedCount = 0;
-  
-  seeds.forEach(function(seed, i) {
-    const url = "https://image.pollinations.ai/prompt/" + encodeURIComponent(final) + "?width=1200&height=628&seed=" + seed + "&nologo=true&enhance=true&model=flux";
-    
-    const div = document.createElement("div");
-    div.className = "img-card fadein";
-    div.style.marginTop = "14px";
-    div.innerHTML = '<div style="position:relative;min-height:160px;background:rgba(255,255,255,0.03);border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center">' +
-      '<div id="iph-' + i + '" style="opacity:0.25;font-size:13px;position:absolute">Loading image ' + (i+1) + '... (30-60 sec)</div>' +
-      '<img id="iimg-' + i + '" style="width:100%;display:none;border-radius:12px 12px 0 0"/>' +
-      '<div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.6);border-radius:5px;padding:2px 8px;font-size:10px">Variation ' + (i+1) + '</div>' +
+  var extra = "";
+  var styles = document.querySelectorAll(".style-card.active");
+  if (styles.length > 0) extra = styles[0].getAttribute("data-extra") || "";
+
+  var prompt = topic + " professional linkedin banner " + extra + " no text high quality";
+  var seed = Math.floor(Math.random() * 99999);
+  var url = "https://image.pollinations.ai/prompt/" + encodeURIComponent(prompt) + "?width=1200&height=628&seed=" + seed + "&nologo=true";
+
+  res.innerHTML = 
+    '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;margin-top:10px">' +
+      '<div id="img-ph" style="min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">' +
+        '<div style="display:flex;gap:5px"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>' +
+        '<div style="font-size:12px;opacity:0.4">Generating your banner... please wait 30-60 seconds</div>' +
       '</div>' +
-      '<div style="background:rgba(255,255,255,0.03);padding:10px 13px;display:flex;justify-content:flex-end;border-radius:0 0 12px 12px">' +
-      '<a href="' + url + '" target="_blank" class="btn btn-primary" style="padding:6px 16px;font-size:12px">⬇ Download</a>' +
-      '</div>';
-    res.appendChild(div);
-    
-    const img = document.getElementById("iimg-" + i);
-    const ph = document.getElementById("iph-" + i);
-    
-    img.onload = function() {
-      img.style.display = "block";
-      ph.style.display = "none";
-      loadedCount++;
-    };
-    img.onerror = function() {
-      ph.textContent = "Image failed to load. Try again.";
-      loadedCount++;
-    };
-    img.src = url;
-  });
-  
-  res.innerHTML += '<div class="tip-box" style="margin-top:14px">💡 <strong>Tip:</strong> Images take 30-60 seconds to load. Download your favourite and use as your LinkedIn post image!</div>';
-  
-  btn.textContent = "✨ Generate 3 Banner Variations"; btn.disabled = false;
+      '<img id="gen-img" src="' + url + '" style="width:100%;display:none" />' +
+      '<div style="padding:12px 14px;display:flex;gap:10px;justify-content:flex-end;background:rgba(255,255,255,0.03)">' +
+        '<a href="' + url + '" target="_blank" class="btn btn-primary" style="padding:7px 18px;font-size:12px">⬇ Download</a>' +
+        '<button class="btn btn-ghost" onclick="generateImages()" style="padding:7px 18px;font-size:12px">🔄 Try Again</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="tip-box" style="margin-top:12px">⏳ Image loading — please wait 30-60 seconds. If it does not appear, click Try Again.</div>';
+
+  var img = document.getElementById("gen-img");
+  var ph = document.getElementById("img-ph");
+
+  img.onload = function() {
+    ph.style.display = "none";
+    img.style.display = "block";
+    btn.textContent = "✨ Generate Banner"; btn.disabled = false;
+  };
+  img.onerror = function() {
+    ph.innerHTML = '<div style="font-size:13px;opacity:0.5;text-align:center;padding:20px">Image failed to load.<br>Click Try Again button below.</div>';
+    btn.textContent = "✨ Generate Banner"; btn.disabled = false;
+  };
+
+  setTimeout(function() { btn.textContent = "✨ Generate Banner"; btn.disabled = false; }, 3000);
 }
 
 // ─── TEMPLATES ────────────────────────────────────────────────────────────────
