@@ -542,19 +542,13 @@ async function callClaude(system, messages, maxTokens=1000) {
   const key = localStorage.getItem("manu_gemini_key");
   if (!key) { showApiModal(); throw new Error("No API key"); }
   const prompt = system + "\n\n" + messages.map(m => (m.role==="user" ? "User: " : "Assistant: ") + m.content).join("\n");
-  // Try gemini-2.0-flash-exp first, fallback to gemini-pro
-  let data, url;
-  const models = ["gemini-2.0-flash-exp", "gemini-1.5-flash-latest", "gemini-pro"];
-  for (const model of models) {
-    url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }], generationConfig:{ maxOutputTokens: maxTokens } }),
-    });
-    data = await res.json();
-    if (!data.error) break;
-  }
+  // Use v1 API with gemini-1.5-flash
+  const res = await fetch("https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + key, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }], generationConfig:{ maxOutputTokens: maxTokens } }),
+  });
+  const data = await res.json();
   if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
   return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 }
