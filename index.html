@@ -793,209 +793,106 @@ function generateImages() {
   res.innerHTML = "";
   document.getElementById("img-loading").style.display = "none";
 
-  // Get active style
   var styleId = imgStyle || "professional";
   var styleMap = {
-    professional: { bg1:"#003366", bg2:"#0055AA", accent:"#FFD700", pattern:"lines" },
-    tech:         { bg1:"#0a0a2e", bg2:"#1a1a6e", accent:"#00FFFF", pattern:"dots" },
-    nature:       { bg1:"#1a3a1a", bg2:"#2d6a2d", accent:"#90EE90", pattern:"waves" },
-    bold:         { bg1:"#1a0a0a", bg2:"#4a0a0a", accent:"#FF4444", pattern:"lines" },
-    gradient:     { bg1:"#6600CC", bg2:"#0066FF", accent:"#FF66CC", pattern:"dots" },
-    workspace:    { bg1:"#1a1a2e", bg2:"#16213e", accent:"#F5A623", pattern:"grid" }
+    professional: { bg1:"#003366", bg2:"#0055AA", accent:"#FFD700" },
+    tech:         { bg1:"#0a0a2e", bg2:"#1a1a6e", accent:"#00FFFF" },
+    nature:       { bg1:"#1a3a1a", bg2:"#2d6a2d", accent:"#90EE90" },
+    bold:         { bg1:"#1a0a0a", bg2:"#4a0a0a", accent:"#FF4444" },
+    gradient:     { bg1:"#6600CC", bg2:"#0066FF", accent:"#FF66CC" },
+    workspace:    { bg1:"#1a1a2e", bg2:"#16213e", accent:"#F5A623" }
   };
-  var style = styleMap[styleId] || styleMap.professional;
+  var s = styleMap[styleId] || styleMap.professional;
 
-  // Create canvas banner
-  var canvas = document.createElement("canvas");
-  canvas.width = 1200; canvas.height = 628;
-  var ctx = canvas.getContext("2d");
+  // Create canvas
+  var cv = document.createElement("canvas");
+  cv.width = 1200;
+  cv.height = 628;
+  var ctx = cv.getContext("2d");
 
-  // Background gradient
+  // Background
   var grd = ctx.createLinearGradient(0, 0, 1200, 628);
-  grd.addColorStop(0, style.bg1);
-  grd.addColorStop(1, style.bg2);
+  grd.addColorStop(0, s.bg1);
+  grd.addColorStop(1, s.bg2);
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, 1200, 628);
 
-  // Pattern overlay
-  ctx.globalAlpha = 0.08;
-  if (style.pattern === "dots") {
-    ctx.fillStyle = "#ffffff";
-    for (var x = 0; x < 1200; x += 40) {
-      for (var y = 0; y < 628; y += 40) {
-        ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
-      }
-    }
-  } else if (style.pattern === "lines") {
-    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1;
-    for (var x = 0; x < 1400; x += 60) {
-      ctx.beginPath(); ctx.moveTo(x - 200, 0); ctx.lineTo(x + 200, 628); ctx.stroke();
-    }
-  } else if (style.pattern === "grid") {
-    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 0.5;
-    for (var x = 0; x < 1200; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 628); ctx.stroke(); }
-    for (var y = 0; y < 628; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1200, y); ctx.stroke(); }
-  } else if (style.pattern === "waves") {
-    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2;
-    for (var i = 0; i < 8; i++) {
-      ctx.beginPath();
-      for (var x = 0; x < 1200; x += 5) {
-        var y = 80 * i + 40 * Math.sin(x * 0.02 + i);
-        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    }
-  }
+  // Circles decoration
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = s.accent;
+  ctx.beginPath(); ctx.arc(0, 314, 300, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(1200, 80, 220, 0, Math.PI * 2); ctx.fill();
   ctx.globalAlpha = 1;
 
-  // Accent shape left
-  ctx.fillStyle = style.accent;
-  ctx.globalAlpha = 0.15;
-  ctx.beginPath(); ctx.arc(-80, 314, 320, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(1280, 100, 200, 0, Math.PI * 2); ctx.fill();
-  ctx.globalAlpha = 1;
+  // Top accent line
+  ctx.fillStyle = s.accent;
+  ctx.fillRect(0, 0, 1200, 7);
 
-  // Accent line top
-  ctx.fillStyle = style.accent;
-  ctx.fillRect(0, 0, 1200, 6);
-
-  // LinkedIn "in" badge
+  // LinkedIn badge
   ctx.fillStyle = "#0077B5";
-  roundRect(ctx, 60, 60, 70, 70, 14);
+  ctx.beginPath();
+  ctx.roundRect(55, 55, 72, 72, 12);
+  ctx.fill();
   ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 44px Georgia";
+  ctx.font = "bold 46px serif";
   ctx.textAlign = "center";
-  ctx.fillText("in", 95, 108);
+  ctx.fillText("in", 91, 107);
 
-  // Main topic text
-  var words = topic.toUpperCase().split(" ");
+  // Topic text
+  var topicUpper = topic.toUpperCase();
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "left";
-  var line1 = words.slice(0, Math.ceil(words.length / 2)).join(" ");
-  var line2 = words.slice(Math.ceil(words.length / 2)).join(" ");
-  if (words.length <= 3) { line1 = topic.toUpperCase(); line2 = ""; }
-  ctx.font = "bold 80px Georgia";
-  ctx.fillText(line1, 60, 320);
-  if (line2) { ctx.font = "bold 80px Georgia"; ctx.fillText(line2, 60, 420); }
+  ctx.shadowColor = "rgba(0,0,0,0.5)";
+  ctx.shadowBlur = 10;
+
+  // Auto font size based on length
+  var fontSize = topic.length > 20 ? 60 : topic.length > 12 ? 72 : 90;
+  ctx.font = "bold " + fontSize + "px serif";
+
+  // Word wrap
+  var words = topicUpper.split(" ");
+  var lines = [];
+  var line = "";
+  var maxW = 900;
+  for (var w = 0; w < words.length; w++) {
+    var test = line + (line ? " " : "") + words[w];
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line); line = words[w];
+    } else { line = test; }
+  }
+  if (line) lines.push(line);
+
+  var startY = lines.length === 1 ? 340 : lines.length === 2 ? 280 : 240;
+  for (var l = 0; l < lines.length; l++) {
+    ctx.fillText(lines[l], 60, startY + l * (fontSize + 16));
+  }
+
+  ctx.shadowBlur = 0;
 
   // Subtitle
-  ctx.fillStyle = style.accent;
-  ctx.font = "32px Arial";
-  ctx.fillText("LinkedIn | Personal Brand | Growth", 60, 520);
+  ctx.fillStyle = s.accent;
+  ctx.font = "28px sans-serif";
+  ctx.fillText("LinkedIn  |  Personal Brand  |  Growth", 60, 560);
 
-  // Right accent bar
-  ctx.fillStyle = style.accent;
-  ctx.globalAlpha = 0.6;
-  ctx.fillRect(1150, 0, 6, 628);
+  // Right bar
+  ctx.fillStyle = s.accent;
+  ctx.globalAlpha = 0.5;
+  ctx.fillRect(1185, 0, 8, 628);
   ctx.globalAlpha = 1;
 
-  // Generate 3 variants with different layouts
-  var variants = [
-    { layout: "left", accent2: style.accent },
-    { layout: "center", accent2: "#ffffff" },
-    { layout: "right", accent2: style.accent }
-  ];
-
-  var allBanners = [];
-
-  variants.forEach(function(v, idx) {
-    var c2 = document.createElement("canvas");
-    c2.width = 1200; c2.height = 628;
-    var c2x = c2.getContext("2d");
-
-    // Background
-    var g2 = c2x.createLinearGradient(0, 0, 1200, 628);
-    if (idx === 0) { g2.addColorStop(0, style.bg1); g2.addColorStop(1, style.bg2); }
-    else if (idx === 1) { g2.addColorStop(0, style.bg2); g2.addColorStop(1, style.bg1); }
-    else { g2.addColorStop(0, style.bg1); g2.addColorStop(0.5, style.bg2); g2.addColorStop(1, style.bg1); }
-    c2x.fillStyle = g2; c2x.fillRect(0, 0, 1200, 628);
-
-    // Pattern
-    c2x.globalAlpha = 0.07;
-    if (style.pattern === "dots") {
-      c2x.fillStyle = "#fff";
-      var sp = idx === 0 ? 40 : idx === 1 ? 30 : 50;
-      for (var px = 0; px < 1200; px += sp) for (var py = 0; py < 628; py += sp) { c2x.beginPath(); c2x.arc(px, py, 2, 0, Math.PI*2); c2x.fill(); }
-    } else if (style.pattern === "lines") {
-      c2x.strokeStyle = "#fff"; c2x.lineWidth = 1;
-      var gap = idx === 0 ? 60 : idx === 1 ? 45 : 80;
-      for (var lx = 0; lx < 1400; lx += gap) { c2x.beginPath(); c2x.moveTo(lx-200,0); c2x.lineTo(lx+200,628); c2x.stroke(); }
-    } else if (style.pattern === "grid") {
-      c2x.strokeStyle = "#fff"; c2x.lineWidth = 0.5;
-      for (var gx = 0; gx < 1200; gx += 50) { c2x.beginPath(); c2x.moveTo(gx,0); c2x.lineTo(gx,628); c2x.stroke(); }
-      for (var gy = 0; gy < 628; gy += 50) { c2x.beginPath(); c2x.moveTo(0,gy); c2x.lineTo(1200,gy); c2x.stroke(); }
-    } else if (style.pattern === "waves") {
-      c2x.strokeStyle = "#fff"; c2x.lineWidth = 1.5;
-      for (var wi = 0; wi < 8; wi++) { c2x.beginPath(); for (var wx = 0; wx < 1200; wx += 5) { var wy = 80*wi + 40*Math.sin(wx*0.02+wi+idx); if(wx===0) c2x.moveTo(wx,wy); else c2x.lineTo(wx,wy); } c2x.stroke(); }
-    }
-    c2x.globalAlpha = 1;
-
-    // Circles
-    c2x.fillStyle = style.accent; c2x.globalAlpha = 0.12;
-    if (idx === 0) { c2x.beginPath(); c2x.arc(-60, 314, 300, 0, Math.PI*2); c2x.fill(); c2x.beginPath(); c2x.arc(1260, 100, 180, 0, Math.PI*2); c2x.fill(); }
-    else if (idx === 1) { c2x.beginPath(); c2x.arc(600, -80, 350, 0, Math.PI*2); c2x.fill(); c2x.beginPath(); c2x.arc(600, 720, 300, 0, Math.PI*2); c2x.fill(); }
-    else { c2x.beginPath(); c2x.arc(1260, 314, 300, 0, Math.PI*2); c2x.fill(); c2x.beginPath(); c2x.arc(-60, 100, 180, 0, Math.PI*2); c2x.fill(); }
-    c2x.globalAlpha = 1;
-
-    // Top bar
-    c2x.fillStyle = style.accent; c2x.fillRect(0, 0, 1200, 6);
-
-    // LinkedIn badge
-    c2x.fillStyle = "#0077B5";
-    var bx = idx === 2 ? 1070 : 60;
-    roundRect(c2x, bx, 50, 70, 70, 14);
-    c2x.fillStyle = "#fff"; c2x.font = "bold 42px Georgia"; c2x.textAlign = "center";
-    c2x.fillText("in", bx+35, 97);
-
-    // Topic text
-    var words = topic.toUpperCase().split(" ");
-    var line1 = words.slice(0, Math.ceil(words.length/2)).join(" ");
-    var line2 = words.slice(Math.ceil(words.length/2)).join(" ");
-    if (words.length <= 2) { line1 = topic.toUpperCase(); line2 = ""; }
-
-    c2x.fillStyle = "#ffffff";
-    c2x.font = "bold 76px Georgia";
-    if (idx === 0) { c2x.textAlign = "left"; c2x.fillText(line1, 60, 310); if(line2) c2x.fillText(line2, 60, 405); }
-    else if (idx === 1) { c2x.textAlign = "center"; c2x.fillText(line1, 600, 290); if(line2) c2x.fillText(line2, 600, 385); }
-    else { c2x.textAlign = "right"; c2x.fillText(line1, 1140, 310); if(line2) c2x.fillText(line2, 1140, 405); }
-
-    // Subtitle
-    c2x.fillStyle = style.accent; c2x.font = "28px Arial";
-    if (idx === 0) { c2x.textAlign = "left"; c2x.fillText("LinkedIn · Personal Brand · Growth", 60, 510); }
-    else if (idx === 1) { c2x.textAlign = "center"; c2x.fillText("LinkedIn · Personal Brand · Growth", 600, 510); }
-    else { c2x.textAlign = "right"; c2x.fillText("LinkedIn · Personal Brand · Growth", 1140, 510); }
-
-    var durl = c2x.toDataURL("image/png");
-    allBanners.push(durl);
-  });
-
-  // Render all 3
-  var html = "";
-  allBanners.forEach(function(durl, i) {
-    html += '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;margin-top:14px">' +
-      '<div style="font-size:11px;opacity:0.4;padding:8px 14px 0;font-family:DM Sans,sans-serif">Variation ' + (i+1) + '</div>' +
-      '<img src="' + durl + '" style="width:100%;display:block" />' +
-      '<div style="padding:10px 14px;display:flex;gap:8px;justify-content:flex-end;background:rgba(255,255,255,0.02)">' +
-        '<button class="btn btn-primary" onclick="dlBanner(' + i + ')" style="padding:6px 16px;font-size:12px">⬇ Download</button>' +
-      '</div>' +
-    '</div>';
-  });
-  html += '<div style="display:flex;gap:10px;margin-top:12px">';
-  html += '<button class="btn btn-ghost" onclick="generateImages()" style="flex:1;padding:10px;font-size:12px">🔄 Generate New Set</button>';
-  html += '</div>';
-  html += '<div class="tip-box" style="margin-top:10px">✅ 3 banners ready! Download your favourite and use it on LinkedIn.</div>';
-  res.innerHTML = html;
-
-  window._banners = allBanners;
+  // Show image
+  var dataURL = cv.toDataURL("image/png");
+  window._bannerURL = dataURL;
   window._bannerTopic = topic;
-}
 
-function dlBanner(i) {
-  if (!window._banners || !window._banners[i]) return;
-  var a = document.createElement("a");
-  a.href = window._banners[i];
-  a.download = (window._bannerTopic || "linkedin-banner") + "-v" + (i+1) + ".png";
-  a.click();
+  res.innerHTML =
+    '<div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);margin-top:10px">' +
+    '<img src="' + dataURL + '" style="width:100%;display:block"/>' +
+    '<div style="padding:12px 14px;display:flex;gap:10px;justify-content:flex-end;background:rgba(255,255,255,0.03)">' +
+    '<button class="btn btn-primary" onclick="downloadBanner()" style="padding:8px 20px;font-size:13px">⬇ Download PNG</button>' +
+    '<button class="btn btn-ghost" onclick="generateImages()" style="padding:8px 20px;font-size:13px">🔄 New Style</button>' +
+    '</div></div>' +
+    '<div class="tip-box" style="margin-top:12px">✅ Banner ready! Download karo aur LinkedIn pe use karo.</div>';
 }
 
 function roundRect(ctx, x, y, w, h, r) {
