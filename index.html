@@ -790,50 +790,146 @@ function setStyle(id) {
 function generateImages() {
   var topic = document.getElementById("img-topic").value.trim();
   if (!topic) { alert("Please enter a topic first!"); return; }
-  
-  var btn = document.getElementById("gen-btn");
-  btn.textContent = "⏳ Generating..."; btn.disabled = true;
-  
+
   var res = document.getElementById("img-results");
   res.innerHTML = "";
   document.getElementById("img-loading").style.display = "none";
 
-  var extra = "";
-  var styles = document.querySelectorAll(".style-card.active");
-  if (styles.length > 0) extra = styles[0].getAttribute("data-extra") || "";
+  // Get active style
+  var styleId = imgStyle || "professional";
+  var styleMap = {
+    professional: { bg1:"#003366", bg2:"#0055AA", accent:"#FFD700", pattern:"lines" },
+    tech:         { bg1:"#0a0a2e", bg2:"#1a1a6e", accent:"#00FFFF", pattern:"dots" },
+    nature:       { bg1:"#1a3a1a", bg2:"#2d6a2d", accent:"#90EE90", pattern:"waves" },
+    bold:         { bg1:"#1a0a0a", bg2:"#4a0a0a", accent:"#FF4444", pattern:"lines" },
+    gradient:     { bg1:"#6600CC", bg2:"#0066FF", accent:"#FF66CC", pattern:"dots" },
+    workspace:    { bg1:"#1a1a2e", bg2:"#16213e", accent:"#F5A623", pattern:"grid" }
+  };
+  var style = styleMap[styleId] || styleMap.professional;
 
-  var prompt = topic + " professional linkedin banner " + extra + " no text high quality";
-  var seed = Math.floor(Math.random() * 99999);
-  var url = "https://image.pollinations.ai/prompt/" + encodeURIComponent(prompt) + "?width=1200&height=628&seed=" + seed + "&nologo=true";
+  // Create canvas banner
+  var canvas = document.createElement("canvas");
+  canvas.width = 1200; canvas.height = 628;
+  var ctx = canvas.getContext("2d");
 
+  // Background gradient
+  var grd = ctx.createLinearGradient(0, 0, 1200, 628);
+  grd.addColorStop(0, style.bg1);
+  grd.addColorStop(1, style.bg2);
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, 1200, 628);
+
+  // Pattern overlay
+  ctx.globalAlpha = 0.08;
+  if (style.pattern === "dots") {
+    ctx.fillStyle = "#ffffff";
+    for (var x = 0; x < 1200; x += 40) {
+      for (var y = 0; y < 628; y += 40) {
+        ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  } else if (style.pattern === "lines") {
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1;
+    for (var x = 0; x < 1400; x += 60) {
+      ctx.beginPath(); ctx.moveTo(x - 200, 0); ctx.lineTo(x + 200, 628); ctx.stroke();
+    }
+  } else if (style.pattern === "grid") {
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 0.5;
+    for (var x = 0; x < 1200; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 628); ctx.stroke(); }
+    for (var y = 0; y < 628; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(1200, y); ctx.stroke(); }
+  } else if (style.pattern === "waves") {
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2;
+    for (var i = 0; i < 8; i++) {
+      ctx.beginPath();
+      for (var x = 0; x < 1200; x += 5) {
+        var y = 80 * i + 40 * Math.sin(x * 0.02 + i);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  // Accent shape left
+  ctx.fillStyle = style.accent;
+  ctx.globalAlpha = 0.15;
+  ctx.beginPath(); ctx.arc(-80, 314, 320, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(1280, 100, 200, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Accent line top
+  ctx.fillStyle = style.accent;
+  ctx.fillRect(0, 0, 1200, 6);
+
+  // LinkedIn "in" badge
+  ctx.fillStyle = "#0077B5";
+  roundRect(ctx, 60, 60, 70, 70, 14);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 44px Georgia";
+  ctx.textAlign = "center";
+  ctx.fillText("in", 95, 108);
+
+  // Main topic text
+  var words = topic.toUpperCase().split(" ");
+  ctx.fillStyle = "#ffffff";
+  ctx.textAlign = "left";
+  var line1 = words.slice(0, Math.ceil(words.length / 2)).join(" ");
+  var line2 = words.slice(Math.ceil(words.length / 2)).join(" ");
+  if (words.length <= 3) { line1 = topic.toUpperCase(); line2 = ""; }
+  ctx.font = "bold 80px Georgia";
+  ctx.fillText(line1, 60, 320);
+  if (line2) { ctx.font = "bold 80px Georgia"; ctx.fillText(line2, 60, 420); }
+
+  // Subtitle
+  ctx.fillStyle = style.accent;
+  ctx.font = "32px Arial";
+  ctx.fillText("LinkedIn | Personal Brand | Growth", 60, 520);
+
+  // Right accent bar
+  ctx.fillStyle = style.accent;
+  ctx.globalAlpha = 0.6;
+  ctx.fillRect(1150, 0, 6, 628);
+  ctx.globalAlpha = 1;
+
+  // Convert to image
+  var dataURL = canvas.toDataURL("image/png");
+  
   res.innerHTML = 
     '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;margin-top:10px">' +
-      '<div id="img-ph" style="min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">' +
-        '<div style="display:flex;gap:5px"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>' +
-        '<div style="font-size:12px;opacity:0.4">Generating your banner... please wait 30-60 seconds</div>' +
-      '</div>' +
-      '<img id="gen-img" src="' + url + '" style="width:100%;display:none" />' +
+      '<img src="' + dataURL + '" style="width:100%;display:block;border-radius:14px 14px 0 0" />' +
       '<div style="padding:12px 14px;display:flex;gap:10px;justify-content:flex-end;background:rgba(255,255,255,0.03)">' +
-        '<a href="' + url + '" target="_blank" class="btn btn-primary" style="padding:7px 18px;font-size:12px">⬇ Download</a>' +
-        '<button class="btn btn-ghost" onclick="generateImages()" style="padding:7px 18px;font-size:12px">🔄 Try Again</button>' +
+        '<button class="btn btn-primary" onclick="downloadBanner()" style="padding:7px 18px;font-size:12px">⬇ Download</button>' +
+        '<button class="btn btn-ghost" onclick="generateImages()" style="padding:7px 18px;font-size:12px">🔄 New Variant</button>' +
       '</div>' +
     '</div>' +
-    '<div class="tip-box" style="margin-top:12px">⏳ Image loading — please wait 30-60 seconds. If it does not appear, click Try Again.</div>';
+    '<div class="tip-box" style="margin-top:12px">✅ Banner ready! Click Download to save it. Click New Variant for a different version.</div>';
 
-  var img = document.getElementById("gen-img");
-  var ph = document.getElementById("img-ph");
+  // Store for download
+  window._bannerURL = dataURL;
+  window._bannerTopic = topic;
+}
 
-  img.onload = function() {
-    ph.style.display = "none";
-    img.style.display = "block";
-    btn.textContent = "✨ Generate Banner"; btn.disabled = false;
-  };
-  img.onerror = function() {
-    ph.innerHTML = '<div style="font-size:13px;opacity:0.5;text-align:center;padding:20px">Image failed to load.<br>Click Try Again button below.</div>';
-    btn.textContent = "✨ Generate Banner"; btn.disabled = false;
-  };
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.fill();
+}
 
-  setTimeout(function() { btn.textContent = "✨ Generate Banner"; btn.disabled = false; }, 3000);
+function downloadBanner() {
+  if (!window._bannerURL) return;
+  var a = document.createElement("a");
+  a.href = window._bannerURL;
+  a.download = (window._bannerTopic || "linkedin-banner") + ".png";
+  a.click();
 }
 
 // ─── TEMPLATES ────────────────────────────────────────────────────────────────
